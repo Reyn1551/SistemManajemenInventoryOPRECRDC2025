@@ -1,0 +1,58 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Inventory {
+  id           String @id @default(cuid())
+  kodeBarang   String @unique
+  namaBarang   String
+  kategori     String
+  spesifikasi  String?
+  stokTersedia Int    @default(0)
+  kondisi      String // Baik, Rusak Ringan, Rusak Berat
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Permintaan {
+  id               String   @id @default(cuid())
+  timestamp        DateTime @default(now())
+  namaDivisi       String
+  namaBarang       String
+  jumlahDiminta    Int
+  hargaSatuan      Float?
+  totalHarga       Float?
+  prioritas        String // Sangat Tinggi, Tinggi, Sedang, Rendah
+  kebutuhanKhusus  String?
+  diperlukanPada   DateTime?
+  statusPermintaan String   @default("Diajukan") // Diajukan, Disetujui Perlengkapan, Sedang Diproses, Selesai, Ditolak
+  catatanPerlengkapan String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Anggaran {
+  id                String   @id @default(cuid())
+  namaDivisi        String
+  namaBarang        String
+  jumlahDiminta     Int
+  estimasiHargaSatuan Float
+  totalEstimasiBiaya Float
+  hargaBeliAktual   Float?
+  totalBiayaAktual  Float?
+  varianAnggaran    Float?
+  statusPermintaan  String
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
