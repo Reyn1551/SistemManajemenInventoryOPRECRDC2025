@@ -1,64 +1,44 @@
-import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { NextResponse } from 'next/server'
 
-export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PUT(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
   try {
-    const body = await request.json()
-    const {
-      namaDivisi,
-      namaBarang,
-      jumlahDiminta,
-      hargaSatuan,
-      totalHarga,
-      prioritas,
-      kebutuhanKhusus,
-      diperlukanPada,
-      statusPermintaan,
-      catatanPerlengkapan
-    } = body
+    const body = await req.json()
 
-    const permintaan = await db.permintaan.update({
-      where: {
-        id: params.id
-      },
+    // Ambil semua data dari body, termasuk totalBiayaAktual
+    const { namaBarang, jumlahDiminta, hargaSatuan, totalHarga, prioritas, statusPermintaan, totalBiayaAktual } = body
+
+    const updatedPermintaan = await db.permintaan.update({
+      where: { id: params.id },
       data: {
-        namaDivisi,
         namaBarang,
-        jumlahDiminta: parseInt(jumlahDiminta),
-        hargaSatuan: hargaSatuan ? parseFloat(hargaSatuan) : null,
-        totalHarga: totalHarga ? parseFloat(totalHarga) : null,
+        jumlahDiminta,
+        hargaSatuan,
+        totalHarga,
         prioritas,
-        kebutuhanKhusus,
-        diperlukanPada: diperlukanPada ? new Date(diperlukanPada) : null,
         statusPermintaan,
-        catatanPerlengkapan
-      }
+        totalBiayaAktual, // Pastikan field ini disertakan dalam update
+      },
     })
-
-    return NextResponse.json(permintaan)
+    return NextResponse.json(updatedPermintaan)
   } catch (error) {
-    console.error('Error updating permintaan:', error)
-    return NextResponse.json(
-      { error: 'Failed to update permintaan' },
-      { status: 500 }
-    )
+    console.error('[PERMINTAAN_UPDATE_ERROR]', error)
+    return new NextResponse('Internal Server Error', { status: 500 })
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
   try {
-    await db.permintaan.delete({
-      where: {
-        id: params.id
-      }
-    })
-
-    return NextResponse.json({ success: true })
+    await db.permintaan.delete({ where: { id: params.id } })
+    return new NextResponse(null, { status: 204 })
   } catch (error) {
-    console.error('Error deleting permintaan:', error)
-    return NextResponse.json(
-      { error: 'Failed to delete permintaan' },
-      { status: 500 }
-    )
+    console.error('[PERMINTAAN_DELETE_ERROR]', error)
+    return new NextResponse('Internal Server Error', { status: 500 })
   }
 }

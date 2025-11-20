@@ -36,6 +36,7 @@ model Permintaan {
   kebutuhanKhusus  String?
   diperlukanPada   DateTime?
   statusPermintaan String   @default("Diajukan") // Diajukan, Disetujui Perlengkapan, Sedang Diproses, Selesai, Ditolak
+  totalBiayaAktual Float?   // Kolom baru untuk biaya aktual
   catatanPerlengkapan String?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt

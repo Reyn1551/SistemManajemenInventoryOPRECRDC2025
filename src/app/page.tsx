@@ -54,6 +54,7 @@ interface PermintaanItem {
   diperlukanPada?: string
   statusPermintaan: string
   catatanPerlengkapan?: string
+  totalBiayaAktual?: number
 }
 
 interface DashboardStats {
@@ -832,6 +833,7 @@ export default function Home() {
                         <TableHead className="font-semibold">Jumlah</TableHead>
                         <TableHead className="font-semibold">Harga</TableHead>
                         <TableHead className="font-semibold">Total</TableHead>
+                        <TableHead className="font-semibold">Biaya Aktual</TableHead>
                         <TableHead className="font-semibold">Prioritas</TableHead>
                         <TableHead className="font-semibold">Status</TableHead>
                         <TableHead className="font-semibold">Aksi</TableHead>
@@ -893,6 +895,19 @@ export default function Home() {
                               />
                             ) : (
                               item.totalHarga ? `Rp ${item.totalHarga.toLocaleString('id-ID')}` : '-'
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {editingItem === item.id ? (
+                              <Input
+                                type="number"
+                                placeholder="Masukkan biaya riil"
+                                value={editForm.totalBiayaAktual || ''}
+                                onChange={(e) => setEditForm({...editForm, totalBiayaAktual: parseFloat(e.target.value) || 0})}
+                                className="w-full"
+                              />
+                            ) : (
+                              item.totalBiayaAktual ? `Rp ${item.totalBiayaAktual.toLocaleString('id-ID')}` : '-'
                             )}
                           </TableCell>
                           <TableCell>

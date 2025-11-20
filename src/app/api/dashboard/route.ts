@@ -3,45 +3,47 @@ import { db } from '@/lib/db'
 
 export async function GET() {
   try {
-    // Get all permintaan and anggaran data
+    // Ambil semua data permintaan dari database
     const permintaan = await db.permintaan.findMany()
-    const anggaran = await db.anggaran.findMany()
 
-    // Calculate total item diminta per divisi
-    const totalItemDiminta = permintaan.reduce((total, item) => total + item.jumlahDiminta, 0)
+    // 1. Hitung Total Item Diminta
+    // Menjumlahkan semua 'jumlahDiminta' dari setiap item permintaan
+    const totalItemDiminta = permintaan.reduce((sum, item) => sum + item.jumlahDiminta, 0)
 
-    // Calculate total estimasi biaya and total biaya aktual
-    const totalEstimasiBiaya = anggaran.reduce((total, item) => total + item.totalEstimasiBiaya, 0)
-    const totalBiayaAktual = anggaran.reduce((total, item) => item.totalBiayaAktual ? total + item.totalBiayaAktual : total, 0)
+    // 2. Hitung Total Estimasi Biaya
+    // Menjumlahkan semua 'totalHarga' dari setiap item permintaan
+    const totalEstimasiBiaya = permintaan.reduce((sum, item) => sum + (item.totalHarga || 0), 0)
 
-    // Calculate status counts
+    // 3. Hitung Total Biaya Aktual
+    // Menjumlahkan semua 'totalBiayaAktual' dari setiap item permintaan
+    const totalBiayaAktual = permintaan.reduce((sum, item) => sum + (item.totalBiayaAktual || 0), 0)
+
+    // 4. Hitung Jumlah Permintaan Berdasarkan Status
     const statusCounts = {
       'Diajukan': 0,
       'Disetujui Perlengkapan': 0,
       'Sedang Diproses': 0,
       'Selesai': 0,
-      'Ditolak': 0
+      'Ditolak': 0,
     }
 
     permintaan.forEach(item => {
-      if (statusCounts.hasOwnProperty(item.statusPermintaan)) {
-        statusCounts[item.statusPermintaan]++
+      if (item.statusPermintaan in statusCounts) {
+        statusCounts[item.statusPermintaan as keyof typeof statusCounts]++
       }
     })
 
-    const dashboardStats = {
+    // Gabungkan semua hasil perhitungan menjadi satu objek
+    const dashboardData = {
       totalItemDiminta,
       totalEstimasiBiaya,
       totalBiayaAktual,
-      statusCounts
+      statusCounts,
     }
 
-    return NextResponse.json(dashboardStats)
+    return NextResponse.json(dashboardData)
   } catch (error) {
-    console.error('Error fetching dashboard stats:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch dashboard stats' },
-      { status: 500 }
-    )
+    console.error('[DASHBOARD_API_ERROR]', error)
+    return new NextResponse('Internal Server Error', { status: 500 })
   }
 }
