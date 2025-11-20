@@ -10,7 +10,6 @@ async function seedDatabase() {
     // Sample inventory data
     const inventoryData = [
       {
-        kodeBarang: 'ACA-001',
         namaBarang: 'Proyektor LCD 3500lm',
         kategori: 'Elektronik',
         spesifikasi: 'Merk X, HDMI, 3500 Lumens',
@@ -18,7 +17,6 @@ async function seedDatabase() {
         kondisi: 'Baik'
       },
       {
-        kodeBarang: 'ACA-002',
         namaBarang: 'Laptop',
         kategori: 'Elektronik',
         spesifikasi: 'Core i5, 8GB RAM, 256GB SSD',
@@ -26,7 +24,6 @@ async function seedDatabase() {
         kondisi: 'Baik'
       },
       {
-        kodeBarang: 'ACA-003',
         namaBarang: 'Sound System',
         kategori: 'Audio',
         spesifikasi: '2.1 Channel, Bluetooth',
@@ -34,7 +31,6 @@ async function seedDatabase() {
         kondisi: 'Baik'
       },
       {
-        kodeBarang: 'KON-001',
         namaBarang: 'Air Mineral',
         kategori: 'Konsumsi',
         spesifikasi: '600ml botol',
@@ -42,7 +38,6 @@ async function seedDatabase() {
         kondisi: 'Baik'
       },
       {
-        kodeBarang: 'KON-002',
         namaBarang: 'Snack Box',
         kategori: 'Konsumsi',
         spesifikasi: 'Isian 5 pcs',

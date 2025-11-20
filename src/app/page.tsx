@@ -34,7 +34,6 @@ import {
 
 interface InventoryItem {
   id: string
-  kodeBarang: string
   namaBarang: string
   kategori: string
   spesifikasi?: string
@@ -165,7 +164,6 @@ export default function Home() {
 
   // Form states
   const [newInventory, setNewInventory] = useState({
-    kodeBarang: '',
     namaBarang: '',
     kategori: '',
     spesifikasi: '',
@@ -237,7 +235,6 @@ export default function Home() {
       if (response.ok) {
         setIsAddInventoryOpen(false)
         setNewInventory({
-          kodeBarang: '',
           namaBarang: '',
           kategori: '',
           spesifikasi: '',
@@ -459,15 +456,6 @@ export default function Home() {
                   </DialogHeader>
                   <div className="grid gap-4 py-4">
                     <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="kodeBarang" className="text-right">Kode Barang</Label>
-                      <Input
-                        id="kodeBarang"
-                        value={newInventory.kodeBarang}
-                        onChange={(e) => setNewInventory({...newInventory, kodeBarang: e.target.value})}
-                        className="col-span-3"
-                      />
-                    </div>
-                    <div className="grid grid-cols-4 items-center gap-4">
                       <Label htmlFor="namaBarang" className="text-right">Nama Barang</Label>
                       <Input
                         id="namaBarang"
@@ -536,7 +524,6 @@ export default function Home() {
                   <Table>
                     <TableHeader>
                       <TableRow className="bg-gray-50">
-                        <TableHead className="font-semibold">Kode Barang</TableHead>
                         <TableHead className="font-semibold">Nama Barang</TableHead>
                         <TableHead className="font-semibold">Kategori</TableHead>
                         <TableHead className="font-semibold">Spesifikasi</TableHead>
@@ -547,7 +534,6 @@ export default function Home() {
                     <TableBody>
                       {inventory.map((item) => (
                         <TableRow key={item.id} className="hover:bg-gray-50">
-                          <TableCell className="font-medium">{item.kodeBarang}</TableCell>
                           <TableCell>{item.namaBarang}</TableCell>
                           <TableCell>{item.kategori}</TableCell>
                           <TableCell className="max-w-xs truncate">{item.spesifikasi}</TableCell>

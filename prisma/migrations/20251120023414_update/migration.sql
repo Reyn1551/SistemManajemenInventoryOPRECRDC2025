@@ -1,7 +1,6 @@
 -- CreateTable
 CREATE TABLE "Inventory" (
     "id" TEXT NOT NULL,
-    "kodeBarang" TEXT NOT NULL,
     "namaBarang" TEXT NOT NULL,
     "kategori" TEXT NOT NULL,
     "spesifikasi" TEXT,
@@ -50,6 +49,3 @@ CREATE TABLE "Anggaran" (
 
     CONSTRAINT "Anggaran_pkey" PRIMARY KEY ("id")
 );
-
--- CreateIndex
-CREATE UNIQUE INDEX "Inventory_kodeBarang_key" ON "Inventory"("kodeBarang");

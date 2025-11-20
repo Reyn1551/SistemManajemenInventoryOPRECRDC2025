@@ -15,7 +15,6 @@ datasource db {
 
 model Inventory {
   id           String @id @default(cuid())
-  kodeBarang   String @unique
   namaBarang   String
   kategori     String
   spesifikasi  String?
