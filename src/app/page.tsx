@@ -393,24 +393,27 @@ export default function Home() {
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 bg-white shadow-sm border border-gray-200">
-            <TabsTrigger value="dashboard" className="data-[state=active]:bg-slate-700 data-[state=active]:text-white transition-colors">
-              <BarChart3 className="w-4 h-4 mr-2" />
-              Dashboard
-            </TabsTrigger>
-            <TabsTrigger value="inventory" className="data-[state=active]:bg-slate-700 data-[state=active]:text-white transition-colors">
-              <Package className="w-4 h-4 mr-2" />
-              Inventory
-            </TabsTrigger>
-            <TabsTrigger value="permintaan" className="data-[state=active]:bg-slate-700 data-[state=active]:text-white transition-colors">
-              <Users className="w-4 h-4 mr-2" />
-              Permintaan
-            </TabsTrigger>
-            <TabsTrigger value="rincian" className="data-[state=active]:bg-slate-700 data-[state=active]:text-white transition-colors">
-              <Eye className="w-4 h-4 mr-2" />
-              Rincian
-            </TabsTrigger>
-          </TabsList>
+          {/* Wrapper untuk scrolling horizontal di mobile */}
+          <div className="w-full overflow-x-auto pb-2">
+            <TabsList className="inline-flex h-auto items-center justify-center rounded-lg bg-white p-1 shadow-sm border border-gray-200">
+              <TabsTrigger value="dashboard" className="data-[state=active]:bg-slate-700 data-[state=active]:text-white transition-colors whitespace-nowrap">
+                <BarChart3 className="w-4 h-4 mr-2" />
+                Dashboard
+              </TabsTrigger>
+              <TabsTrigger value="inventory" className="data-[state=active]:bg-slate-700 data-[state=active]:text-white transition-colors whitespace-nowrap">
+                <Package className="w-4 h-4 mr-2" />
+                Inventory
+              </TabsTrigger>
+              <TabsTrigger value="permintaan" className="data-[state=active]:bg-slate-700 data-[state=active]:text-white transition-colors whitespace-nowrap">
+                <Users className="w-4 h-4 mr-2" />
+                Permintaan
+              </TabsTrigger>
+              <TabsTrigger value="rincian" className="data-[state=active]:bg-slate-700 data-[state=active]:text-white transition-colors whitespace-nowrap">
+                <Eye className="w-4 h-4 mr-2" />
+                Rincian
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           {/* Dashboard Tab */}
           <TabsContent value="dashboard" className="space-y-6">
