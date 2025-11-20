@@ -10,7 +10,7 @@ async function seedDatabase() {
     // Sample inventory data
     const inventoryData = [
       {
-        namaBarang: 'Proyektor LCD 3500lm',
+        namaBarang: 'Proyektor',
         kategori: 'Elektronik',
         spesifikasi: 'Merk X, HDMI, 3500 Lumens',
         stokTersedia: 2,
@@ -20,7 +20,7 @@ async function seedDatabase() {
         namaBarang: 'Laptop',
         kategori: 'Elektronik',
         spesifikasi: 'Core i5, 8GB RAM, 256GB SSD',
-        stokTersedia: 5,
+        stokTersedia: 2,
         kondisi: 'Baik'
       },
       {

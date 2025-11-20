@@ -1,5 +1,4 @@
 'use client'
-
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -31,6 +30,7 @@ import {
   Building,
   Settings
 } from 'lucide-react'
+import LoginPage from '@/components/ui/LoginPage'
 
 interface InventoryItem {
   id: string
@@ -163,6 +163,10 @@ export default function Home() {
   const [editingItem, setEditingItem] = useState<string | null>(null)
   const [editForm, setEditForm] = useState<Partial<PermintaanItem>>({})
   
+  // State untuk autentikasi
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
   // State for inventory editing
   const [editingInventoryItem, setEditingInventoryItem] = useState<string | null>(null)
   const [editInventoryForm, setEditInventoryForm] = useState<Partial<InventoryItem>>({})
@@ -220,6 +224,15 @@ export default function Home() {
   useEffect(() => {
     fetchData()
   }, [])
+
+  // Cek status login saat komponen pertama kali dimuat
+  useEffect(() => {
+    const authStatus = sessionStorage.getItem('isAuthenticated');
+    if (authStatus === 'true') {
+      setIsAuthenticated(true);
+    }
+    setIsLoading(false); // Selesai loading
+  }, []);
 
   // Calculate total harga when jumlah or harga changes
   useEffect(() => {
@@ -376,8 +389,24 @@ export default function Home() {
     }
   }
 
+  // Fungsi yang akan dipanggil saat login berhasil
+  const handleLoginSuccess = () => {
+    setIsAuthenticated(true);
+  };
+  
+  // Saat masih loading, tampilkan halaman kosong untuk mencegah konten utama terlihat sekejap
+  if (isLoading) {
+    return <div className="min-h-screen bg-gray-100 dark:bg-gray-900"></div>;
+  }
+
+  // Jika tidak terautentikasi, tampilkan halaman login
+  if (!isAuthenticated) {
+    return <LoginPage onLoginSuccess={handleLoginSuccess} />;
+  }
+
+  // Jika berhasil diautentikasi, tampilkan konten aplikasi utama
   return (
-    <div className="min-h-screen bg-gray-50">
+    <main className="flex min-h-screen flex-col items-center p-4 md:p-8 lg:p-12 bg-gray-50 dark:bg-gray-950">
       <div className="max-w-7xl mx-auto p-4 md:p-6">
         {/* Header */}
         <div className="mb-8 text-center">
@@ -1075,6 +1104,6 @@ export default function Home() {
           </TabsContent>
         </Tabs>
       </div>
-    </div>
+    </main>
   )
 }
