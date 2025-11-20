@@ -161,6 +161,10 @@ export default function Home() {
   const [isAddPermintaanOpen, setIsAddPermintaanOpen] = useState(false)
   const [editingItem, setEditingItem] = useState<string | null>(null)
   const [editForm, setEditForm] = useState<Partial<PermintaanItem>>({})
+  
+  // State for inventory editing
+  const [editingInventoryItem, setEditingInventoryItem] = useState<string | null>(null)
+  const [editInventoryForm, setEditInventoryForm] = useState<Partial<InventoryItem>>({})
 
   // Form states
   const [newInventory, setNewInventory] = useState({
@@ -316,6 +320,57 @@ export default function Home() {
         }
       } catch (error) {
         console.error('Error deleting permintaan:', error)
+      }
+    }
+  }
+
+  const handleEditInventory = (item: InventoryItem) => {
+    setEditingInventoryItem(item.id)
+    setEditInventoryForm(item)
+  }
+
+  const handleCancelInventoryEdit = () => {
+    setEditingInventoryItem(null)
+    setEditInventoryForm({})
+  }
+
+  const handleSaveInventoryEdit = async () => {
+    if (!editingInventoryItem) return
+    try {
+      const response = await fetch(`/api/inventory/${editingInventoryItem}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(editInventoryForm),
+      })
+
+      if (response.ok) {
+        handleCancelInventoryEdit()
+        fetchData()
+      }
+    } catch (error) {
+      console.error('Error updating inventory:', error)
+    }
+  }
+
+  const handleDeleteInventory = async (id: string) => {
+    if (confirm('Apakah Anda yakin ingin menghapus item inventory ini? Ini tidak dapat dibatalkan.')) {
+      try {
+        const response = await fetch(`/api/inventory/${id}`, {
+          method: 'DELETE',
+        })
+
+        if (response.ok) {
+          fetchData()
+        } else {
+          const errorData = await response.json()
+          console.error('Failed to delete inventory:', errorData.error)
+          alert(`Gagal menghapus: ${errorData.error}`)
+        }
+      } catch (error) {
+        console.error('Error deleting inventory:', error)
+        alert('Terjadi kesalahan saat menghapus item.')
       }
     }
   }
@@ -529,23 +584,83 @@ export default function Home() {
                         <TableHead className="font-semibold">Spesifikasi</TableHead>
                         <TableHead className="font-semibold">Stok</TableHead>
                         <TableHead className="font-semibold">Kondisi</TableHead>
+                        <TableHead className="font-semibold text-center">Aksi</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {inventory.map((item) => (
                         <TableRow key={item.id} className="hover:bg-gray-50">
-                          <TableCell>{item.namaBarang}</TableCell>
-                          <TableCell>{item.kategori}</TableCell>
-                          <TableCell className="max-w-xs truncate">{item.spesifikasi}</TableCell>
+                          {editingInventoryItem === item.id ? (
+                            <>
+                              <TableCell>
+                                <Input value={editInventoryForm.namaBarang} onChange={(e) => setEditInventoryForm({...editInventoryForm, namaBarang: e.target.value})} />
+                              </TableCell>
+                              <TableCell>
+                                <Input value={editInventoryForm.kategori} onChange={(e) => setEditInventoryForm({...editInventoryForm, kategori: e.target.value})} />
+                              </TableCell>
+                              <TableCell>
+                                <Input value={editInventoryForm.spesifikasi} onChange={(e) => setEditInventoryForm({...editInventoryForm, spesifikasi: e.target.value})} />
+                              </TableCell>
+                              <TableCell>
+                                <Input type="number" value={editInventoryForm.stokTersedia} onChange={(e) => setEditInventoryForm({...editInventoryForm, stokTersedia: parseInt(e.target.value) || 0})} />
+                              </TableCell>
+                              <TableCell>
+                                <Select value={editInventoryForm.kondisi} onValueChange={(value) => setEditInventoryForm({...editInventoryForm, kondisi: value})}>
+                                  <SelectTrigger>
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {kondisiOptions.map((kondisi) => (
+                                      <SelectItem key={kondisi} value={kondisi}>{kondisi}</SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </TableCell>
+                            </>
+                          ) : (
+                            <>
+                              <TableCell>{item.namaBarang}</TableCell>
+                              <TableCell>{item.kategori}</TableCell>
+                              <TableCell className="max-w-xs truncate">{item.spesifikasi}</TableCell>
+                              <TableCell>
+                                <Badge variant={item.stokTersedia > 0 ? "default" : "destructive"}>
+                                  {item.stokTersedia}
+                                </Badge>
+                              </TableCell>
+                              <TableCell>
+                                <Badge variant={item.kondisi === 'Baik' ? 'default' : 'secondary'}>
+                                  {item.kondisi}
+                                </Badge>
+                              </TableCell>
+                            </>
+                          )}
                           <TableCell>
-                            <Badge variant={item.stokTersedia > 0 ? "default" : "destructive"}>
-                              {item.stokTersedia}
-                            </Badge>
-                          </TableCell>
-                          <TableCell>
-                            <Badge variant={item.kondisi === 'Baik' ? 'default' : 'secondary'}>
-                              {item.kondisi}
-                            </Badge>
+                            <div className="flex gap-2 justify-center">
+                              {editingInventoryItem === item.id ? (
+                                <>
+                                  <Button size="sm" onClick={handleSaveInventoryEdit} className="bg-emerald-600 hover:bg-emerald-700">
+                                    <Save className="w-4 h-4" />
+                                  </Button>
+                                  <Button size="sm" variant="outline" onClick={handleCancelInventoryEdit}>
+                                    <X className="w-4 h-4" />
+                                  </Button>
+                                </>
+                              ) : (
+                                <>
+                                  <Button size="sm" variant="outline" onClick={() => handleEditInventory(item)}>
+                                    <Edit2 className="w-4 h-4" />
+                                  </Button>
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline" 
+                                    onClick={() => handleDeleteInventory(item.id)} 
+                                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </Button>
+                                </>
+                              )}
+                            </div>
                           </TableCell>
                         </TableRow>
                       ))}
