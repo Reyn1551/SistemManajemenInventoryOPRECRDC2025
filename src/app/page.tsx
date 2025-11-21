@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
@@ -23,6 +24,7 @@ import {
   X,
   Trash2,
   Eye,
+  FilterX,
   Calendar,
   DollarSign,
   Users,
@@ -176,6 +178,24 @@ export default function Home() {
   const [editingInventoryItem, setEditingInventoryItem] = useState<string | null>(null)
   const [editInventoryForm, setEditInventoryForm] = useState<Partial<InventoryItem>>({})
 
+  // State untuk filter
+  const [permintaanFilters, setPermintaanFilters] = useState({
+    divisi: 'Semua',
+    prioritas: 'Semua',
+    status: 'Semua',
+    search: ''
+  });
+  const [inventoryFilters, setInventoryFilters] = useState({
+    kategori: '',
+    kondisi: 'Semua',
+    search: ''
+  });
+
+  // State untuk data yang sudah difilter
+  const [filteredPermintaan, setFilteredPermintaan] = useState<PermintaanItem[]>([]);
+  const [filteredInventory, setFilteredInventory] = useState<InventoryItem[]>([]);
+
+
   // Form states
   const [newInventory, setNewInventory] = useState({
     namaBarang: '',
@@ -234,6 +254,46 @@ export default function Home() {
       console.error('Error fetching dashboard stats:', error);
     }
   }
+
+  // Efek untuk menerapkan filter pada data permintaan
+  useEffect(() => {
+    let data = [...permintaan];
+    if (permintaanFilters.divisi !== 'Semua') {
+      data = data.filter(item => item.namaDivisi === permintaanFilters.divisi);
+    }
+    if (permintaanFilters.prioritas !== 'Semua') {
+      data = data.filter(item => item.prioritas === permintaanFilters.prioritas);
+    }
+    if (permintaanFilters.status !== 'Semua') {
+      data = data.filter(item => item.statusPermintaan === permintaanFilters.status);
+    }
+    if (permintaanFilters.search) {
+      data = data.filter(item => 
+        item.namaBarang.toLowerCase().includes(permintaanFilters.search.toLowerCase())
+      );
+    }
+    setFilteredPermintaan(data);
+  }, [permintaan, permintaanFilters]);
+
+  // Efek untuk menerapkan filter pada data inventory
+  useEffect(() => {
+    let data = [...inventory];
+    if (inventoryFilters.kategori) {
+      data = data.filter(item => 
+        item.kategori.toLowerCase().includes(inventoryFilters.kategori.toLowerCase())
+      );
+    }
+    if (inventoryFilters.kondisi !== 'Semua') {
+      data = data.filter(item => item.kondisi === inventoryFilters.kondisi);
+    }
+    if (inventoryFilters.search) {
+      data = data.filter(item => 
+        item.namaBarang.toLowerCase().includes(inventoryFilters.search.toLowerCase())
+      );
+    }
+    setFilteredInventory(data);
+  }, [inventory, inventoryFilters]);
+
 
   useEffect(() => {
     fetchData()
@@ -446,6 +506,14 @@ export default function Home() {
             <div className="p-3 bg-slate-800 rounded-lg shadow-sm">
               <Building className="w-8 h-8 text-white" />
             </div>
+            {/* <div className="p-2 bg-slate-800 rounded-lg shadow-sm flex items-center justify-center">
+              <Image
+                src="/logo-rdc.svg" // Sesuaikan nama file ini dengan nama file logo Anda
+                alt="Logo RDC"
+                width={40} // Ukuran lebar (w-10)
+                height={40} // Ukuran tinggi (h-10)
+              />
+            </div> */}
             <h1 className="text-4xl md:text-5xl font-bold text-slate-800">
               Sistem Inventory Management
             </h1>
@@ -638,6 +706,40 @@ export default function Home() {
               </Dialog>
             </div>
 
+            {/* Filter Section */}
+            <div className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
+              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                <Input 
+                  placeholder="Cari nama barang..."
+                  value={inventoryFilters.search}
+                  onChange={(e) => setInventoryFilters({...inventoryFilters, search: e.target.value})}
+                />
+                <Input 
+                  placeholder="Cari kategori..."
+                  value={inventoryFilters.kategori}
+                  onChange={(e) => setInventoryFilters({...inventoryFilters, kategori: e.target.value})}
+                />
+                <Select value={inventoryFilters.kondisi} onValueChange={(value) => setInventoryFilters({...inventoryFilters, kondisi: value})}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Filter Kondisi" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Semua">Semua Kondisi</SelectItem>
+                    {kondisiOptions.map(opt => <SelectItem key={opt} value={opt}>{opt}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setInventoryFilters({ kategori: '', kondisi: 'Semua', search: '' })}
+                  className="col-span-1 lg:col-start-5"
+                >
+                  <FilterX className="w-4 h-4 mr-2" />
+                  Reset Filter
+                </Button>
+              </div>
+            </div>
+
+
             <Card className="bg-white shadow-sm border border-gray-200">
               <CardContent className="p-0">
                 <div className="max-h-96 overflow-y-auto">
@@ -653,7 +755,7 @@ export default function Home() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {inventory.map((item) => (
+                      {filteredInventory.map((item) => (
                         <TableRow key={item.id} className="hover:bg-gray-50">
                           {editingInventoryItem === item.id ? (
                             <>
@@ -904,7 +1006,7 @@ export default function Home() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {permintaan.map((item) => (
+                      {filteredPermintaan.map((item) => (
                         <TableRow key={item.id} className={`hover:bg-gray-50 ${divisiColors[item.namaDivisi as keyof typeof divisiColors].hover}`}>
                           <TableCell className="font-medium">
                             {new Date(item.timestamp).toLocaleDateString('id-ID')}
@@ -1048,12 +1150,58 @@ export default function Home() {
             <h2 className="text-3xl font-bold text-slate-800">
               Rincian Kebutuhan Per Divisi
             </h2>
+
+            {/* Filter Section - DIPINDAHKAN KE SINI */}
+            <div className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
+              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+                <Input 
+                  placeholder="Cari nama barang..."
+                  value={permintaanFilters.search}
+                  onChange={(e) => setPermintaanFilters({...permintaanFilters, search: e.target.value})}
+                />
+                <Select value={permintaanFilters.divisi} onValueChange={(value) => setPermintaanFilters({...permintaanFilters, divisi: value})}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Filter Divisi" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Semua">Semua Divisi</SelectItem>
+                    {divisiOptions.map(opt => <SelectItem key={opt} value={opt}>{opt}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+                <Select value={permintaanFilters.prioritas} onValueChange={(value) => setPermintaanFilters({...permintaanFilters, prioritas: value})}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Filter Prioritas" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Semua">Semua Prioritas</SelectItem>
+                    {prioritasOptions.map(opt => <SelectItem key={opt} value={opt}>{opt}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+                <Select value={permintaanFilters.status} onValueChange={(value) => setPermintaanFilters({...permintaanFilters, status: value})}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Filter Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Semua">Semua Status</SelectItem>
+                    {statusOptions.map(opt => <SelectItem key={opt} value={opt}>{opt}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+                <Button 
+                  variant="outline" 
+                  onClick={() => setPermintaanFilters({ divisi: 'Semua', prioritas: 'Semua', status: 'Semua', search: '' })}
+                >
+                  <FilterX className="w-4 h-4 mr-2" />
+                  Reset Filter
+                </Button>
+              </div>
+            </div>
             
             <div className="space-y-8">
               {divisiOptions.map((divisi) => {
-                const divisiPermintaan = permintaan.filter(item => item.namaDivisi === divisi)
+                // Menggunakan data yang sudah difilter
+                const divisiPermintaan = filteredPermintaan.filter(item => item.namaDivisi === divisi)
                 const colors = divisiColors[divisi as keyof typeof divisiColors]
-                return (
+                return divisiPermintaan.length > 0 ? (
                   <Card key={divisi} className="bg-white shadow-sm border border-gray-200">
                     <CardHeader className={`${colors.light} ${colors.border} border-l-4`}>
                       <div className="flex items-center justify-between">
@@ -1072,65 +1220,56 @@ export default function Home() {
                       </div>
                     </CardHeader>
                     <CardContent>
-                      {divisiPermintaan.length > 0 ? (
-                        <div className="max-h-64 overflow-y-auto">
-                          <Table>
-                            <TableHeader>
-                              <TableRow className="bg-gray-50">
-                                <TableHead className="font-semibold">Tanggal</TableHead>
-                                <TableHead className="font-semibold">Nama Barang</TableHead>
-                                <TableHead className="font-semibold">Jumlah</TableHead>
-                                <TableHead className="font-semibold">Harga</TableHead>
-                                <TableHead className="font-semibold">Total</TableHead>
-                                <TableHead className="font-semibold">Prioritas</TableHead>
-                                <TableHead className="font-semibold">Status</TableHead>
-                                <TableHead className="font-semibold">Catatan</TableHead>
+                      <div className="max-h-64 overflow-y-auto">
+                        <Table>
+                          <TableHeader>
+                            <TableRow className="bg-gray-50">
+                              <TableHead className="font-semibold">Tanggal</TableHead>
+                              <TableHead className="font-semibold">Nama Barang</TableHead>
+                              <TableHead className="font-semibold">Jumlah</TableHead>
+                              <TableHead className="font-semibold">Harga</TableHead>
+                              <TableHead className="font-semibold">Total</TableHead>
+                              <TableHead className="font-semibold">Prioritas</TableHead>
+                              <TableHead className="font-semibold">Status</TableHead>
+                              <TableHead className="font-semibold">Catatan</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {divisiPermintaan.map((item) => (
+                              <TableRow key={item.id} onClick={() => handleRincianClick(item)} className={`cursor-pointer hover:bg-gray-50 ${colors.hover}`}>
+                                <TableCell className="font-medium">
+                                  {new Date(item.timestamp).toLocaleDateString('id-ID')}
+                                </TableCell>
+                                <TableCell>{item.namaBarang}</TableCell>
+                                <TableCell>{item.jumlahDiminta}</TableCell>
+                                <TableCell>
+                                  {item.hargaSatuan ? `Rp ${item.hargaSatuan.toLocaleString('id-ID')}` : '-'}
+                                </TableCell>
+                                <TableCell>
+                                  {item.totalHarga ? `Rp ${item.totalHarga.toLocaleString('id-ID')}` : '-'}
+                                </TableCell>
+                                <TableCell>
+                                  <Badge className={getPriorityColor(item.prioritas)}>
+                                    {item.prioritas}
+                                  </Badge>
+                                </TableCell>
+                                <TableCell>
+                                  <Badge className={getStatusColor(item.statusPermintaan)}>
+                                    {getStatusIcon(item.statusPermintaan)}
+                                    <span className="ml-1">{item.statusPermintaan}</span>
+                                  </Badge>
+                                </TableCell>
+                                <TableCell className="max-w-xs truncate">
+                                  {item.catatanPerlengkapan || item.kebutuhanKhusus || '-'}
+                                </TableCell>
                               </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                              {divisiPermintaan.map((item) => (
-                                <TableRow key={item.id} onClick={() => handleRincianClick(item)} className={`cursor-pointer hover:bg-gray-50 ${colors.hover}`}>
-                                  <TableCell className="font-medium">
-                                    {new Date(item.timestamp).toLocaleDateString('id-ID')}
-                                  </TableCell>
-                                  <TableCell>{item.namaBarang}</TableCell>
-                                  <TableCell>{item.jumlahDiminta}</TableCell>
-                                  <TableCell>
-                                    {item.hargaSatuan ? `Rp ${item.hargaSatuan.toLocaleString('id-ID')}` : '-'}
-                                  </TableCell>
-                                  <TableCell>
-                                    {item.totalHarga ? `Rp ${item.totalHarga.toLocaleString('id-ID')}` : '-'}
-                                  </TableCell>
-                                  <TableCell>
-                                    <Badge className={getPriorityColor(item.prioritas)}>
-                                      {item.prioritas}
-                                    </Badge>
-                                  </TableCell>
-                                  <TableCell>
-                                    <Badge className={getStatusColor(item.statusPermintaan)}>
-                                      {getStatusIcon(item.statusPermintaan)}
-                                      <span className="ml-1">{item.statusPermintaan}</span>
-                                    </Badge>
-                                  </TableCell>
-                                  <TableCell className="max-w-xs truncate">
-                                    {item.catatanPerlengkapan || item.kebutuhanKhusus || '-'}
-                                  </TableCell>
-                                </TableRow>
-                              ))}
-                            </TableBody>
-                          </Table>
-                        </div>
-                      ) : (
-                        <div className="text-center py-8">
-                          <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
-                            <Package className="w-8 h-8 text-gray-400" />
-                          </div>
-                          <p className="text-gray-500">Belum ada permintaan untuk divisi ini</p>
-                        </div>
-                      )}
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
                     </CardContent>
                   </Card>
-                )
+                ) : null
               })}
             </div>
           </TabsContent>
