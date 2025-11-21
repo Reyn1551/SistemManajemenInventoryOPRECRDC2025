@@ -1,23 +1,49 @@
-'use client'
-import { useState, useEffect } from 'react'
-import Image from 'next/image'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Textarea } from '@/components/ui/textarea'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { 
-  Plus, 
-  Package, 
-  TrendingUp, 
-  AlertCircle, 
-  CheckCircle, 
-  Clock, 
+"use client";
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Plus,
+  Package,
+  TrendingUp,
+  AlertCircle,
+  CheckCircle,
+  Clock,
   XCircle,
   Edit2,
   Save,
@@ -31,246 +57,287 @@ import {
   Users,
   BarChart3,
   Building,
-  Settings
-} from 'lucide-react'
-import LoginPage from '@/components/ui/LoginPage'
-import { Toaster, toast } from 'sonner'
+  Settings,
+} from "lucide-react";
+import LoginPage from "@/components/ui/LoginPage";
+import { Toaster, toast } from "sonner";
 
 interface InventoryItem {
-  id: string
-  namaBarang: string
-  kategori: string
-  spesifikasi?: string
-  stokTersedia: number
-  kondisi: string
+  id: string;
+  namaBarang: string;
+  kategori: string;
+  spesifikasi?: string;
+  stokTersedia: number;
+  kondisi: string;
 }
 
 interface PermintaanItem {
-  id: string
-  timestamp: string
-  namaDivisi: string
-  namaBarang: string
-  jumlahDiminta: number
-  hargaSatuan?: number
-  totalHarga?: number
-  prioritas: string
-  kebutuhanKhusus?: string
-  diperlukanPada?: string
-  statusPermintaan: string
-  catatanPerlengkapan?: string
-  totalBiayaAktual?: number
+  id: string;
+  timestamp: string;
+  namaDivisi: string;
+  namaBarang: string;
+  jumlahDiminta: number;
+  hargaSatuan?: number;
+  totalHarga?: number;
+  prioritas: string;
+  kebutuhanKhusus?: string;
+  diperlukanPada?: string;
+  statusPermintaan: string;
+  catatanPerlengkapan?: string;
+  totalBiayaAktual?: number;
 }
 
 interface DashboardStats {
-  totalItemDiminta: number
-  totalEstimasiBiaya: number
-  totalBiayaAktual: number
+  totalItemDiminta: number;
+  totalEstimasiBiaya: number;
+  totalBiayaAktual: number;
   statusCounts: {
-    'Diajukan': number
-    'Disetujui Perlengkapan': number
-    'Sedang Diproses': number
-    'Selesai': number
-    'Ditolak': number
-  }
+    Diajukan: number;
+    "Disetujui Perlengkapan": number;
+    "Sedang Diproses": number;
+    Selesai: number;
+    Ditolak: number;
+  };
 }
 
-const divisiOptions = ['PH', 'LO', 'Acara', 'Humas', 'Konsumsi', 'PDD']
-const prioritasOptions = ['Sangat Tinggi', 'Tinggi', 'Sedang', 'Rendah']
-const statusOptions = ['Diajukan', 'Disetujui Perlengkapan', 'Sedang Diproses', 'Selesai', 'Ditolak']
-const kondisiOptions = ['Baik', 'Rusak Ringan', 'Rusak Berat']
+const divisiOptions = ["PH", "LO", "Acara", "Humas", "Konsumsi", "PDD"];
+const prioritasOptions = ["Sangat Tinggi", "Tinggi", "Sedang", "Rendah"];
+const statusOptions = [
+  "Diajukan",
+  "Disetujui Perlengkapan",
+  "Sedang Diproses",
+  "Selesai",
+  "Ditolak",
+];
+const kondisiOptions = ["Baik", "Rusak Ringan", "Rusak Berat"];
 
 // Professional color schemes for divisions
 const divisiColors = {
-  'PH': {
-    bg: 'bg-slate-700',
-    light: 'bg-slate-100',
-    text: 'text-slate-800',
-    border: 'border-slate-200',
-    hover: 'hover:bg-slate-50'
+  PH: {
+    bg: "bg-slate-700",
+    light: "bg-slate-100",
+    text: "text-slate-800",
+    border: "border-slate-200",
+    hover: "hover:bg-slate-50",
   },
-  'LO': {
-    bg: 'bg-teal-700',
-    light: 'bg-teal-50',
-    text: 'text-teal-800',
-    border: 'border-teal-200',
-    hover: 'hover:bg-teal-50'
+  LO: {
+    bg: "bg-teal-700",
+    light: "bg-teal-50",
+    text: "text-teal-800",
+    border: "border-teal-200",
+    hover: "hover:bg-teal-50",
   },
-  'Acara': {
-    bg: 'bg-blue-700',
-    light: 'bg-blue-50',
-    text: 'text-blue-800',
-    border: 'border-blue-200',
-    hover: 'hover:bg-blue-50'
+  Acara: {
+    bg: "bg-blue-700",
+    light: "bg-blue-50",
+    text: "text-blue-800",
+    border: "border-blue-200",
+    hover: "hover:bg-blue-50",
   },
-  'Humas': {
-    bg: 'bg-emerald-700',
-    light: 'bg-emerald-50',
-    text: 'text-emerald-800',
-    border: 'border-emerald-200',
-    hover: 'hover:bg-emerald-50'
+  Humas: {
+    bg: "bg-emerald-700",
+    light: "bg-emerald-50",
+    text: "text-emerald-800",
+    border: "border-emerald-200",
+    hover: "hover:bg-emerald-50",
   },
-  'Konsumsi': {
-    bg: 'bg-amber-700',
-    light: 'bg-amber-50',
-    text: 'text-amber-800',
-    border: 'border-amber-200',
-    hover: 'hover:bg-amber-50'
+  Konsumsi: {
+    bg: "bg-amber-700",
+    light: "bg-amber-50",
+    text: "text-amber-800",
+    border: "border-amber-200",
+    hover: "hover:bg-amber-50",
   },
-  'PDD': {
-    bg: 'bg-purple-700',
-    light: 'bg-purple-50',
-    text: 'text-purple-800',
-    border: 'border-purple-200',
-    hover: 'hover:bg-purple-50'
-  }
-}
+  PDD: {
+    bg: "bg-purple-700",
+    light: "bg-purple-50",
+    text: "text-purple-800",
+    border: "border-purple-200",
+    hover: "hover:bg-purple-50",
+  },
+};
 
 const getPriorityColor = (priority: string) => {
   switch (priority) {
-    case 'Sangat Tinggi': return 'bg-red-100 text-red-800 border border-red-200'
-    case 'Tinggi': return 'bg-orange-100 text-orange-800 border border-orange-200'
-    case 'Sedang': return 'bg-yellow-100 text-yellow-800 border border-yellow-200'
-    case 'Rendah': return 'bg-green-100 text-green-800 border border-green-200'
-    default: return 'bg-gray-100 text-gray-800 border border-gray-200'
+    case "Sangat Tinggi":
+      return "bg-red-100 text-red-800 border border-red-200";
+    case "Tinggi":
+      return "bg-orange-100 text-orange-800 border border-orange-200";
+    case "Sedang":
+      return "bg-yellow-100 text-yellow-800 border border-yellow-200";
+    case "Rendah":
+      return "bg-green-100 text-green-800 border border-green-200";
+    default:
+      return "bg-gray-100 text-gray-800 border border-gray-200";
   }
-}
+};
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'Diajukan': return 'bg-blue-100 text-blue-800 border border-blue-200'
-    case 'Disetujui Perlengkapan': return 'bg-indigo-100 text-indigo-800 border border-indigo-200'
-    case 'Sedang Diproses': return 'bg-yellow-100 text-yellow-800 border border-yellow-200'
-    case 'Selesai': return 'bg-green-100 text-green-800 border border-green-200'
-    case 'Ditolak': return 'bg-red-100 text-red-800 border border-red-200'
-    default: return 'bg-gray-100 text-gray-800 border border-gray-200'
+    case "Diajukan":
+      return "bg-blue-100 text-blue-800 border border-blue-200";
+    case "Disetujui Perlengkapan":
+      return "bg-indigo-100 text-indigo-800 border border-indigo-200";
+    case "Sedang Diproses":
+      return "bg-yellow-100 text-yellow-800 border border-yellow-200";
+    case "Selesai":
+      return "bg-green-100 text-green-800 border border-green-200";
+    case "Ditolak":
+      return "bg-red-100 text-red-800 border border-red-200";
+    default:
+      return "bg-gray-100 text-gray-800 border border-gray-200";
   }
-}
+};
 
 const getStatusIcon = (status: string) => {
   switch (status) {
-    case 'Diajukan': return <Clock className="w-4 h-4" />
-    case 'Disetujui Perlengkapan': return <CheckCircle className="w-4 h-4" />
-    case 'Sedang Diproses': return <AlertCircle className="w-4 h-4" />
-    case 'Selesai': return <CheckCircle className="w-4 h-4" />
-    case 'Ditolak': return <XCircle className="w-4 h-4" />
-    default: return <Clock className="w-4 h-4" />
+    case "Diajukan":
+      return <Clock className="w-4 h-4" />;
+    case "Disetujui Perlengkapan":
+      return <CheckCircle className="w-4 h-4" />;
+    case "Sedang Diproses":
+      return <AlertCircle className="w-4 h-4" />;
+    case "Selesai":
+      return <CheckCircle className="w-4 h-4" />;
+    case "Ditolak":
+      return <XCircle className="w-4 h-4" />;
+    default:
+      return <Clock className="w-4 h-4" />;
   }
-}
+};
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState('dashboard')
-  const [inventory, setInventory] = useState<InventoryItem[]>([])
-  const [permintaan, setPermintaan] = useState<PermintaanItem[]>([])
-  const [dashboardStats, setDashboardStats] = useState<DashboardStats | null>(null)
-  const [isAddInventoryOpen, setIsAddInventoryOpen] = useState(false)
-  const [isAddPermintaanOpen, setIsAddPermintaanOpen] = useState(false)
-  const [editingItem, setEditingItem] = useState<string | null>(null)
-  const [editForm, setEditForm] = useState<Partial<PermintaanItem>>({})
-  
+  const [activeTab, setActiveTab] = useState("dashboard");
+  const [inventory, setInventory] = useState<InventoryItem[]>([]);
+  const [permintaan, setPermintaan] = useState<PermintaanItem[]>([]);
+  const [dashboardStats, setDashboardStats] = useState<DashboardStats | null>(
+    null,
+  );
+  const [isAddInventoryOpen, setIsAddInventoryOpen] = useState(false);
+  const [isAddPermintaanOpen, setIsAddPermintaanOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState<Partial<PermintaanItem>>({});
+
   //state untuk dialog rincian
-  const [isRincianDetailOpen, setIsRincianDetailOpen] = useState(false)
-  const [selectedRincianItem, setSelectedRincianItem] = useState<PermintaanItem | null>(null)
+  const [isRincianDetailOpen, setIsRincianDetailOpen] = useState(false);
+  const [selectedRincianItem, setSelectedRincianItem] =
+    useState<PermintaanItem | null>(null);
 
   // State untuk autentikasi
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   // State for inventory editing
-  const [editingInventoryItem, setEditingInventoryItem] = useState<string | null>(null)
-  const [editInventoryForm, setEditInventoryForm] = useState<Partial<InventoryItem>>({})
+  const [editingInventoryItem, setEditingInventoryItem] = useState<
+    string | null
+  >(null);
+  const [editInventoryForm, setEditInventoryForm] = useState<
+    Partial<InventoryItem>
+  >({});
 
   // State untuk filter
   const [permintaanFilters, setPermintaanFilters] = useState({
-    divisi: 'Semua',
-    prioritas: 'Semua',
-    status: 'Semua',
-    search: ''
+    divisi: "Semua",
+    prioritas: "Semua",
+    status: "Semua",
+    search: "",
   });
   const [inventoryFilters, setInventoryFilters] = useState({
-    kategori: '',
-    kondisi: 'Semua',
-    search: ''
+    kategori: "",
+    kondisi: "Semua",
+    search: "",
   });
 
   // State untuk data yang sudah difilter
-  const [filteredPermintaan, setFilteredPermintaan] = useState<PermintaanItem[]>([]);
-  const [filteredInventory, setFilteredInventory] = useState<InventoryItem[]>([]);
-
+  const [filteredPermintaan, setFilteredPermintaan] = useState<
+    PermintaanItem[]
+  >([]);
+  const [filteredInventory, setFilteredInventory] = useState<InventoryItem[]>(
+    [],
+  );
 
   // Form states
   const [newInventory, setNewInventory] = useState({
-    namaBarang: '',
-    kategori: '',
-    spesifikasi: '',
+    namaBarang: "",
+    kategori: "",
+    spesifikasi: "",
     stokTersedia: 0,
-    kondisi: ''
-  })
+    kondisi: "",
+  });
 
   const [newPermintaan, setNewPermintaan] = useState({
-    namaDivisi: '',
-    namaBarang: '',
+    namaDivisi: "",
+    namaBarang: "",
     jumlahDiminta: 1,
     hargaSatuan: 0,
     totalHarga: 0,
-    prioritas: '',
-    kebutuhanKhusus: '',
-    diperlukanPada: '',
-    statusPermintaan: 'Diajukan',
-    catatanPerlengkapan: ''
-  })
+    prioritas: "",
+    kebutuhanKhusus: "",
+    diperlukanPada: "",
+    statusPermintaan: "Diajukan",
+    catatanPerlengkapan: "",
+  });
 
   // Fetch data from API
   const fetchData = async () => {
     // Mengambil data inventory secara terpisah
     try {
-      const inventoryRes = await fetch('/api/inventory');
+      const inventoryRes = await fetch("/api/inventory");
       if (inventoryRes.ok) {
         const inventoryData = await inventoryRes.json();
         setInventory(inventoryData);
       } else {
-        console.error('Failed to fetch inventory');
-        toast.error('Gagal memuat data inventory.');
+        console.error("Failed to fetch inventory");
+        toast.error("Gagal memuat data inventory.");
       }
     } catch (error) {
-      console.error('Error fetching inventory:', error);
-      toast.error('Terjadi kesalahan saat memuat data inventory.');
+      console.error("Error fetching inventory:", error);
+      toast.error("Terjadi kesalahan saat memuat data inventory.");
     }
-    
+
     // Mengambil data permintaan secara terpisah
     try {
-      const permintaanRes = await fetch('/api/permintaan');
+      const permintaanRes = await fetch("/api/permintaan");
       if (permintaanRes.ok) {
         const permintaanData = await permintaanRes.json();
         setPermintaan(permintaanData);
       }
     } catch (error) {
-      console.error('Error fetching permintaan:', error);
+      console.error("Error fetching permintaan:", error);
     }
 
     // Mengambil data dashboard secara terpisah
     try {
-      const dashboardRes = await fetch('/api/dashboard');
+      const dashboardRes = await fetch("/api/dashboard");
       if (dashboardRes.ok) setDashboardStats(await dashboardRes.json());
     } catch (error) {
-      console.error('Error fetching dashboard stats:', error);
+      console.error("Error fetching dashboard stats:", error);
     }
-  }
+  };
 
   // Efek untuk menerapkan filter pada data permintaan
   useEffect(() => {
     let data = [...permintaan];
-    if (permintaanFilters.divisi !== 'Semua') {
-      data = data.filter(item => item.namaDivisi === permintaanFilters.divisi);
+    if (permintaanFilters.divisi !== "Semua") {
+      data = data.filter(
+        (item) => item.namaDivisi === permintaanFilters.divisi,
+      );
     }
-    if (permintaanFilters.prioritas !== 'Semua') {
-      data = data.filter(item => item.prioritas === permintaanFilters.prioritas);
+    if (permintaanFilters.prioritas !== "Semua") {
+      data = data.filter(
+        (item) => item.prioritas === permintaanFilters.prioritas,
+      );
     }
-    if (permintaanFilters.status !== 'Semua') {
-      data = data.filter(item => item.statusPermintaan === permintaanFilters.status);
+    if (permintaanFilters.status !== "Semua") {
+      data = data.filter(
+        (item) => item.statusPermintaan === permintaanFilters.status,
+      );
     }
     if (permintaanFilters.search) {
-      data = data.filter(item => 
-        item.namaBarang.toLowerCase().includes(permintaanFilters.search.toLowerCase())
+      data = data.filter((item) =>
+        item.namaBarang
+          .toLowerCase()
+          .includes(permintaanFilters.search.toLowerCase()),
       );
     }
     setFilteredPermintaan(data);
@@ -280,30 +347,35 @@ export default function Home() {
   useEffect(() => {
     let data = [...inventory];
     if (inventoryFilters.kategori) {
-      data = data.filter(item => 
-        item.kategori.toLowerCase().includes(inventoryFilters.kategori.toLowerCase())
+      data = data.filter((item) =>
+        item.kategori
+          .toLowerCase()
+          .includes(inventoryFilters.kategori.toLowerCase()),
       );
     }
-    if (inventoryFilters.kondisi !== 'Semua') {
-      data = data.filter(item => item.kondisi === inventoryFilters.kondisi);
+    if (inventoryFilters.kondisi !== "Semua") {
+      data = data.filter((item) => item.kondisi === inventoryFilters.kondisi);
     }
     if (inventoryFilters.search) {
-      data = data.filter(item => 
-        item.namaBarang.toLowerCase().includes(inventoryFilters.search.toLowerCase())
+      data = data.filter((item) =>
+        item.namaBarang
+          .toLowerCase()
+          .includes(inventoryFilters.search.toLowerCase()),
       );
     }
     setFilteredInventory(data);
   }, [inventory, inventoryFilters]);
 
-
   useEffect(() => {
-    fetchData()
-  }, [])
+    fetchData();
+  }, []);
 
   // Cek status login saat komponen pertama kali dimuat
   useEffect(() => {
-    const authStatus = sessionStorage.getItem('isAuthenticated');
-    if (authStatus === 'true') {
+    const localAuthStatus = localStorage.getItem("isAuthenticated");
+    const sessionAuthStatus = sessionStorage.getItem("isAuthenticated");
+
+    if (localAuthStatus === "true" || sessionAuthStatus === "true") {
       setIsAuthenticated(true);
     }
     setIsLoading(false); // Selesai loading
@@ -311,174 +383,178 @@ export default function Home() {
 
   // Calculate total harga when jumlah or harga changes
   useEffect(() => {
-    const total = newPermintaan.jumlahDiminta * newPermintaan.hargaSatuan
-    setNewPermintaan(prev => ({ ...prev, totalHarga: total }))
-  }, [newPermintaan.jumlahDiminta, newPermintaan.hargaSatuan])
+    const total = newPermintaan.jumlahDiminta * newPermintaan.hargaSatuan;
+    setNewPermintaan((prev) => ({ ...prev, totalHarga: total }));
+  }, [newPermintaan.jumlahDiminta, newPermintaan.hargaSatuan]);
 
   const handleAddInventory = async () => {
     try {
-      const response = await fetch('/api/inventory', {
-        method: 'POST',
+      const response = await fetch("/api/inventory", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(newInventory),
-      })
+      });
 
       if (response.ok) {
-        setIsAddInventoryOpen(false)
+        setIsAddInventoryOpen(false);
         setNewInventory({
-          namaBarang: '',
-          kategori: '',
-          spesifikasi: '',
+          namaBarang: "",
+          kategori: "",
+          spesifikasi: "",
           stokTersedia: 0,
-          kondisi: ''
-        })
-        fetchData()
-        toast.success('Item inventory berhasil ditambahkan!')
+          kondisi: "",
+        });
+        fetchData();
+        toast.success("Item inventory berhasil ditambahkan!");
       }
     } catch (error) {
-      console.error('Error adding inventory:', error)
+      console.error("Error adding inventory:", error);
     }
-  }
+  };
 
   const handleAddPermintaan = async () => {
     try {
-      const response = await fetch('/api/permintaan', {
-        method: 'POST',
+      const response = await fetch("/api/permintaan", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(newPermintaan),
-      })
+      });
 
       if (response.ok) {
-        setIsAddPermintaanOpen(false)
+        setIsAddPermintaanOpen(false);
         setNewPermintaan({
-          namaDivisi: '',
-          namaBarang: '',
+          namaDivisi: "",
+          namaBarang: "",
           jumlahDiminta: 1,
           hargaSatuan: 0,
           totalHarga: 0,
-          prioritas: '',
-          kebutuhanKhusus: '',
-          diperlukanPada: '',
-          statusPermintaan: 'Diajukan',
-          catatanPerlengkapan: ''
-        })
-        fetchData()
-        toast.success('Permintaan baru berhasil ditambahkan!')
+          prioritas: "",
+          kebutuhanKhusus: "",
+          diperlukanPada: "",
+          statusPermintaan: "Diajukan",
+          catatanPerlengkapan: "",
+        });
+        fetchData();
+        toast.success("Permintaan baru berhasil ditambahkan!");
       }
     } catch (error) {
-      toast.error('Gagal menambahkan permintaan baru.')
-      console.error('Error adding permintaan:', error)
+      toast.error("Gagal menambahkan permintaan baru.");
+      console.error("Error adding permintaan:", error);
     }
-  }
+  };
 
   const handleEdit = (item: PermintaanItem) => {
-    setEditingItem(item.id)
-    setEditForm(item)
-  }
+    setEditingItem(item.id);
+    setEditForm(item);
+  };
 
   const handleSaveEdit = async () => {
     try {
       const response = await fetch(`/api/permintaan/${editingItem}`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(editForm),
-      })
+      });
 
       if (response.ok) {
-        setEditingItem(null)
-        setEditForm({})
-        fetchData()
-        toast.success('Perubahan berhasil disimpan!')
+        setEditingItem(null);
+        setEditForm({});
+        fetchData();
+        toast.success("Perubahan berhasil disimpan!");
       }
     } catch (error) {
-      toast.error('Gagal menyimpan perubahan.')
-      console.error('Error updating permintaan:', error)
+      toast.error("Gagal menyimpan perubahan.");
+      console.error("Error updating permintaan:", error);
     }
-  }
+  };
 
   const handleDelete = async (id: string) => {
-    if (confirm('Apakah Anda yakin ingin menghapus item ini?')) {
+    if (confirm("Apakah Anda yakin ingin menghapus item ini?")) {
       try {
         const response = await fetch(`/api/permintaan/${id}`, {
-          method: 'DELETE',
-        })
+          method: "DELETE",
+        });
 
         if (response.ok) {
-          fetchData()
-          toast.success('Item permintaan berhasil dihapus.')
+          fetchData();
+          toast.success("Item permintaan berhasil dihapus.");
         }
       } catch (error) {
-        toast.error('Gagal menghapus item permintaan.')
-        console.error('Error deleting permintaan:', error)
+        toast.error("Gagal menghapus item permintaan.");
+        console.error("Error deleting permintaan:", error);
       }
     }
-  }
+  };
 
   const handleEditInventory = (item: InventoryItem) => {
-    setEditingInventoryItem(item.id)
-    setEditInventoryForm(item)
-  }
+    setEditingInventoryItem(item.id);
+    setEditInventoryForm(item);
+  };
 
   const handleCancelInventoryEdit = () => {
-    setEditingInventoryItem(null)
-    setEditInventoryForm({})
-  }
+    setEditingInventoryItem(null);
+    setEditInventoryForm({});
+  };
 
   const handleSaveInventoryEdit = async () => {
-    if (!editingInventoryItem) return
+    if (!editingInventoryItem) return;
     try {
       const response = await fetch(`/api/inventory/${editingInventoryItem}`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(editInventoryForm),
-      })
+      });
 
       if (response.ok) {
-        handleCancelInventoryEdit()
-        fetchData()
-        toast.success('Item inventory berhasil diperbarui!')
+        handleCancelInventoryEdit();
+        fetchData();
+        toast.success("Item inventory berhasil diperbarui!");
       }
     } catch (error) {
-      toast.error('Gagal memperbarui item inventory.')
-      console.error('Error updating inventory:', error)
+      toast.error("Gagal memperbarui item inventory.");
+      console.error("Error updating inventory:", error);
     }
-  }
+  };
 
   const handleDeleteInventory = async (id: string) => {
-    if (confirm('Apakah Anda yakin ingin menghapus item inventory ini? Ini tidak dapat dibatalkan.')) {
+    if (
+      confirm(
+        "Apakah Anda yakin ingin menghapus item inventory ini? Ini tidak dapat dibatalkan.",
+      )
+    ) {
       try {
         const response = await fetch(`/api/inventory/${id}`, {
-          method: 'DELETE',
-        })
+          method: "DELETE",
+        });
 
         if (response.ok) {
-          fetchData()
-          toast.success('Item inventory berhasil dihapus.')
+          fetchData();
+          toast.success("Item inventory berhasil dihapus.");
         } else {
-          const errorData = await response.json()
-          console.error('Failed to delete inventory:', errorData.error)
-          toast.error(`Gagal menghapus: ${errorData.error}`)
+          const errorData = await response.json();
+          console.error("Failed to delete inventory:", errorData.error);
+          toast.error(`Gagal menghapus: ${errorData.error}`);
         }
       } catch (error) {
-        console.error('Error deleting inventory:', error)        
-        toast.error('Terjadi kesalahan saat menghapus item.')
+        console.error("Error deleting inventory:", error);
+        toast.error("Terjadi kesalahan saat menghapus item.");
       }
     }
-  }
+  };
 
   //Handler untuk membaca dialog rincian
   const handleRincianClick = (item: PermintaanItem) => {
-    setSelectedRincianItem(item)
-    setIsRincianDetailOpen(true)
-  }
+    setSelectedRincianItem(item);
+    setIsRincianDetailOpen(true);
+  };
 
   // Fungsi untuk mengekspor data ke CSV
   const handleExportToCSV = () => {
@@ -489,57 +565,72 @@ export default function Home() {
 
     // Definisikan header untuk file CSV
     const headers = [
-      "ID", "Tanggal Diajukan", "Divisi", "Nama Barang", "Jumlah Diminta", 
-      "Estimasi Harga Satuan", "Total Estimasi Harga", "Biaya Aktual", 
-      "Prioritas", "Status", "Kebutuhan Khusus", "Catatan Perlengkapan"
+      "ID",
+      "Tanggal Diajukan",
+      "Divisi",
+      "Nama Barang",
+      "Jumlah Diminta",
+      "Estimasi Harga Satuan",
+      "Total Estimasi Harga",
+      "Biaya Aktual",
+      "Prioritas",
+      "Status",
+      "Kebutuhan Khusus",
+      "Catatan Perlengkapan",
     ];
 
     // Fungsi kecil untuk memastikan data dengan koma tidak merusak format CSV
     const escapeCsv = (val: any) => {
-      if (val === null || val === undefined) return '';
+      if (val === null || val === undefined) return "";
       const str = String(val);
       // Jika string mengandung koma, bungkus dengan tanda kutip ganda
-      if (str.includes(',')) return `"${str.replace(/"/g, '""')}"`;
+      if (str.includes(",")) return `"${str.replace(/"/g, '""')}"`;
       return str;
     };
 
     // Ubah setiap item permintaan menjadi baris CSV
-    const rows = filteredPermintaan.map(item => [
-      item.id,
-      new Date(item.timestamp).toLocaleDateString('id-ID'),
-      item.namaDivisi,
-      escapeCsv(item.namaBarang),
-      item.jumlahDiminta,
-      item.hargaSatuan || 0,
-      item.totalHarga || 0,
-      item.totalBiayaAktual || 0,
-      item.prioritas,
-      item.statusPermintaan,
-      escapeCsv(item.kebutuhanKhusus),
-      escapeCsv(item.catatanPerlengkapan)
-    ].join(','));
+    const rows = filteredPermintaan.map((item) =>
+      [
+        item.id,
+        new Date(item.timestamp).toLocaleDateString("id-ID"),
+        item.namaDivisi,
+        escapeCsv(item.namaBarang),
+        item.jumlahDiminta,
+        item.hargaSatuan || 0,
+        item.totalHarga || 0,
+        item.totalBiayaAktual || 0,
+        item.prioritas,
+        item.statusPermintaan,
+        escapeCsv(item.kebutuhanKhusus),
+        escapeCsv(item.catatanPerlengkapan),
+      ].join(","),
+    );
 
     // Gabungkan header dan semua baris data
-    const csvContent = [headers.join(','), ...rows].join('\n');
+    const csvContent = [headers.join(","), ...rows].join("\n");
 
     // Buat Blob dan picu unduhan
-    const blob = new Blob([`\uFEFF${csvContent}`], { type: 'text/csv;charset=utf-8;' }); // \uFEFF untuk kompatibilitas Excel
+    const blob = new Blob([`\uFEFF${csvContent}`], {
+      type: "text/csv;charset=utf-8;",
+    }); // \uFEFF untuk kompatibilitas Excel
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
     link.setAttribute("href", url);
-    link.setAttribute("download", `laporan_permintaan_rdc_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute(
+      "download",
+      `laporan_permintaan_rdc_${new Date().toISOString().split("T")[0]}.csv`,
+    );
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     toast.success("Data berhasil diekspor!");
   };
 
-
   // Fungsi yang akan dipanggil saat login berhasil
   const handleLoginSuccess = () => {
     setIsAuthenticated(true);
   };
-  
+
   // Saat masih loading, tampilkan halaman kosong untuk mencegah konten utama terlihat sekejap
   if (isLoading) {
     return <div className="min-h-screen bg-gray-100 dark:bg-gray-900"></div>;
@@ -573,26 +664,44 @@ export default function Home() {
               Sistem Inventory Management
             </h1>
           </div>
-          <p className="text-gray-600 text-lg">Open Recruitment Robotic Development Community 2025</p>
+          <p className="text-gray-600 text-lg">
+            Open Recruitment Robotic Development Community 2025
+          </p>
         </div>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <Tabs
+          value={activeTab}
+          onValueChange={setActiveTab}
+          className="space-y-6"
+        >
           {/* Wrapper untuk scrolling horizontal di mobile */}
           <div className="w-full overflow-x-auto pb-2 md:flex md:justify-center">
             <TabsList className="inline-flex h-auto items-center justify-center rounded-lg bg-white p-1 shadow-sm border border-gray-200">
-              <TabsTrigger value="dashboard" className="data-[state=active]:bg-slate-700 data-[state=active]:text-white transition-colors whitespace-nowrap">
+              <TabsTrigger
+                value="dashboard"
+                className="data-[state=active]:bg-slate-700 data-[state=active]:text-white transition-colors whitespace-nowrap"
+              >
                 <BarChart3 className="w-4 h-4 mr-2" />
                 Dashboard
               </TabsTrigger>
-              <TabsTrigger value="inventory" className="data-[state=active]:bg-slate-700 data-[state=active]:text-white transition-colors whitespace-nowrap">
+              <TabsTrigger
+                value="inventory"
+                className="data-[state=active]:bg-slate-700 data-[state=active]:text-white transition-colors whitespace-nowrap"
+              >
                 <Package className="w-4 h-4 mr-2" />
                 Inventory
               </TabsTrigger>
-              <TabsTrigger value="permintaan" className="data-[state=active]:bg-slate-700 data-[state=active]:text-white transition-colors whitespace-nowrap">
+              <TabsTrigger
+                value="permintaan"
+                className="data-[state=active]:bg-slate-700 data-[state=active]:text-white transition-colors whitespace-nowrap"
+              >
                 <Users className="w-4 h-4 mr-2" />
                 Permintaan
               </TabsTrigger>
-              <TabsTrigger value="rincian" className="data-[state=active]:bg-slate-700 data-[state=active]:text-white transition-colors whitespace-nowrap">
+              <TabsTrigger
+                value="rincian"
+                className="data-[state=active]:bg-slate-700 data-[state=active]:text-white transition-colors whitespace-nowrap"
+              >
                 <Eye className="w-4 h-4 mr-2" />
                 Rincian
               </TabsTrigger>
@@ -605,7 +714,9 @@ export default function Home() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <Card className="bg-white shadow-sm border border-gray-200">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-600">Total Item Diminta</CardTitle>
+                  <CardTitle className="text-sm font-medium text-gray-600">
+                    Total Item Diminta
+                  </CardTitle>
                   <div className="p-2 bg-slate-100 rounded-lg">
                     <Package className="h-4 w-4 text-slate-600" />
                   </div>
@@ -617,32 +728,41 @@ export default function Home() {
                   <p className="text-xs text-gray-500 mt-1">Items requested</p>
                 </CardContent>
               </Card>
-              
+
               <Card className="bg-white shadow-sm border border-gray-200">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-600">Total Estimasi Biaya</CardTitle>
+                  <CardTitle className="text-sm font-medium text-gray-600">
+                    Total Estimasi Biaya
+                  </CardTitle>
                   <div className="p-2 bg-emerald-100 rounded-lg">
                     <DollarSign className="h-4 w-4 text-emerald-600" />
                   </div>
                 </CardHeader>
                 <CardContent>
                   <div className="text-3xl font-bold text-slate-800">
-                    Rp {dashboardStats?.totalEstimasiBiaya.toLocaleString('id-ID') || 0}
+                    Rp{" "}
+                    {dashboardStats?.totalEstimasiBiaya.toLocaleString(
+                      "id-ID",
+                    ) || 0}
                   </div>
                   <p className="text-xs text-gray-500 mt-1">Estimated budget</p>
                 </CardContent>
               </Card>
-              
+
               <Card className="bg-white shadow-sm border border-gray-200">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-gray-600">Total Biaya Aktual</CardTitle>
+                  <CardTitle className="text-sm font-medium text-gray-600">
+                    Total Biaya Aktual
+                  </CardTitle>
                   <div className="p-2 bg-blue-100 rounded-lg">
                     <TrendingUp className="h-4 w-4 text-blue-600" />
                   </div>
                 </CardHeader>
                 <CardContent>
                   <div className="text-3xl font-bold text-slate-800">
-                    Rp {dashboardStats?.totalBiayaAktual.toLocaleString('id-ID') || 0}
+                    Rp{" "}
+                    {dashboardStats?.totalBiayaAktual.toLocaleString("id-ID") ||
+                      0}
                   </div>
                   <p className="text-xs text-gray-500 mt-1">Actual cost</p>
                 </CardContent>
@@ -659,17 +779,21 @@ export default function Home() {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                  {Object.entries(dashboardStats?.statusCounts || {}).map(([status, count]) => (
-                    <div key={status} className="text-center">
-                      <div className={`inline-flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium ${getStatusColor(status)}`}>
-                        {getStatusIcon(status)}
-                        {status}
+                  {Object.entries(dashboardStats?.statusCounts || {}).map(
+                    ([status, count]) => (
+                      <div key={status} className="text-center">
+                        <div
+                          className={`inline-flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium ${getStatusColor(status)}`}
+                        >
+                          {getStatusIcon(status)}
+                          {status}
+                        </div>
+                        <div className="text-2xl font-bold mt-2 text-slate-800">
+                          {count}
+                        </div>
                       </div>
-                      <div className="text-2xl font-bold mt-2 text-slate-800">
-                        {count}
-                      </div>
-                    </div>
-                  ))}
+                    ),
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -681,7 +805,10 @@ export default function Home() {
               <h2 className="text-3xl font-bold text-slate-800">
                 Data Master Inventory
               </h2>
-              <Dialog open={isAddInventoryOpen} onOpenChange={setIsAddInventoryOpen}>
+              <Dialog
+                open={isAddInventoryOpen}
+                onOpenChange={setIsAddInventoryOpen}
+              >
                 <DialogTrigger asChild>
                   <Button className="bg-slate-700 hover:bg-slate-800 text-white">
                     <Plus className="w-4 h-4 mr-2" />
@@ -699,61 +826,104 @@ export default function Home() {
                   </DialogHeader>
                   <div className="grid gap-4 py-4">
                     <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="namaBarang" className="text-right">Nama Barang</Label>
+                      <Label htmlFor="namaBarang" className="text-right">
+                        Nama Barang
+                      </Label>
                       <Input
                         id="namaBarang"
                         value={newInventory.namaBarang}
-                        onChange={(e) => setNewInventory({...newInventory, namaBarang: e.target.value})}
+                        onChange={(e) =>
+                          setNewInventory({
+                            ...newInventory,
+                            namaBarang: e.target.value,
+                          })
+                        }
                         className="col-span-3"
                       />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="kategori" className="text-right">Kategori</Label>
+                      <Label htmlFor="kategori" className="text-right">
+                        Kategori
+                      </Label>
                       <Input
                         id="kategori"
                         value={newInventory.kategori}
-                        onChange={(e) => setNewInventory({...newInventory, kategori: e.target.value})}
+                        onChange={(e) =>
+                          setNewInventory({
+                            ...newInventory,
+                            kategori: e.target.value,
+                          })
+                        }
                         className="col-span-3"
                       />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="spesifikasi" className="text-right">Spesifikasi</Label>
+                      <Label htmlFor="spesifikasi" className="text-right">
+                        Spesifikasi
+                      </Label>
                       <Input
                         id="spesifikasi"
                         value={newInventory.spesifikasi}
-                        onChange={(e) => setNewInventory({...newInventory, spesifikasi: e.target.value})}
+                        onChange={(e) =>
+                          setNewInventory({
+                            ...newInventory,
+                            spesifikasi: e.target.value,
+                          })
+                        }
                         className="col-span-3"
                       />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="stokTersedia" className="text-right">Stok</Label>
+                      <Label htmlFor="stokTersedia" className="text-right">
+                        Stok
+                      </Label>
                       <Input
                         id="stokTersedia"
                         type="number"
                         value={newInventory.stokTersedia}
-                        onChange={(e) => setNewInventory({...newInventory, stokTersedia: parseInt(e.target.value) || 0})}
+                        onChange={(e) =>
+                          setNewInventory({
+                            ...newInventory,
+                            stokTersedia: parseInt(e.target.value) || 0,
+                          })
+                        }
                         className="col-span-3"
                       />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="kondisi" className="text-right">Kondisi</Label>
-                      <Select value={newInventory.kondisi} onValueChange={(value) => setNewInventory({...newInventory, kondisi: value})}>
+                      <Label htmlFor="kondisi" className="text-right">
+                        Kondisi
+                      </Label>
+                      <Select
+                        value={newInventory.kondisi}
+                        onValueChange={(value) =>
+                          setNewInventory({ ...newInventory, kondisi: value })
+                        }
+                      >
                         <SelectTrigger className="col-span-3">
                           <SelectValue placeholder="Pilih kondisi" />
                         </SelectTrigger>
                         <SelectContent>
                           {kondisiOptions.map((kondisi) => (
-                            <SelectItem key={kondisi} value={kondisi}>{kondisi}</SelectItem>
+                            <SelectItem key={kondisi} value={kondisi}>
+                              {kondisi}
+                            </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
                     </div>
                   </div>
                   <div className="flex justify-end gap-2">
-                    <Button variant="outline" onClick={() => setIsAddInventoryOpen(false)}>
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsAddInventoryOpen(false)}
+                    >
                       Batal
                     </Button>
-                    <Button onClick={handleAddInventory} className="bg-slate-700 hover:bg-slate-800">
+                    <Button
+                      onClick={handleAddInventory}
+                      className="bg-slate-700 hover:bg-slate-800"
+                    >
                       Simpan
                     </Button>
                   </div>
@@ -764,28 +934,53 @@ export default function Home() {
             {/* Filter Section */}
             <div className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
               <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                <Input 
+                <Input
                   placeholder="Cari nama barang..."
                   value={inventoryFilters.search}
-                  onChange={(e) => setInventoryFilters({...inventoryFilters, search: e.target.value})}
+                  onChange={(e) =>
+                    setInventoryFilters({
+                      ...inventoryFilters,
+                      search: e.target.value,
+                    })
+                  }
                 />
-                <Input 
+                <Input
                   placeholder="Cari kategori..."
                   value={inventoryFilters.kategori}
-                  onChange={(e) => setInventoryFilters({...inventoryFilters, kategori: e.target.value})}
+                  onChange={(e) =>
+                    setInventoryFilters({
+                      ...inventoryFilters,
+                      kategori: e.target.value,
+                    })
+                  }
                 />
-                <Select value={inventoryFilters.kondisi} onValueChange={(value) => setInventoryFilters({...inventoryFilters, kondisi: value})}>
+                <Select
+                  value={inventoryFilters.kondisi}
+                  onValueChange={(value) =>
+                    setInventoryFilters({ ...inventoryFilters, kondisi: value })
+                  }
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Filter Kondisi" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Semua">Semua Kondisi</SelectItem>
-                    {kondisiOptions.map(opt => <SelectItem key={opt} value={opt}>{opt}</SelectItem>)}
+                    {kondisiOptions.map((opt) => (
+                      <SelectItem key={opt} value={opt}>
+                        {opt}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
-                <Button 
-                  variant="outline" 
-                  onClick={() => setInventoryFilters({ kategori: '', kondisi: 'Semua', search: '' })}
+                <Button
+                  variant="outline"
+                  onClick={() =>
+                    setInventoryFilters({
+                      kategori: "",
+                      kondisi: "Semua",
+                      search: "",
+                    })
+                  }
                   className="col-span-1 lg:col-start-5"
                 >
                   <FilterX className="w-4 h-4 mr-2" />
@@ -794,19 +989,26 @@ export default function Home() {
               </div>
             </div>
 
-
             <Card className="bg-white shadow-sm border border-gray-200">
               <CardContent className="p-0">
                 <div className="max-h-96 overflow-y-auto">
                   <Table>
                     <TableHeader>
                       <TableRow className="bg-gray-50">
-                        <TableHead className="font-semibold">Nama Barang</TableHead>
-                        <TableHead className="font-semibold">Kategori</TableHead>
-                        <TableHead className="font-semibold">Spesifikasi</TableHead>
+                        <TableHead className="font-semibold">
+                          Nama Barang
+                        </TableHead>
+                        <TableHead className="font-semibold">
+                          Kategori
+                        </TableHead>
+                        <TableHead className="font-semibold">
+                          Spesifikasi
+                        </TableHead>
                         <TableHead className="font-semibold">Stok</TableHead>
                         <TableHead className="font-semibold">Kondisi</TableHead>
-                        <TableHead className="font-semibold text-center">Aksi</TableHead>
+                        <TableHead className="font-semibold text-center">
+                          Aksi
+                        </TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -815,25 +1017,69 @@ export default function Home() {
                           {editingInventoryItem === item.id ? (
                             <>
                               <TableCell>
-                                <Input value={editInventoryForm.namaBarang} onChange={(e) => setEditInventoryForm({...editInventoryForm, namaBarang: e.target.value})} />
+                                <Input
+                                  value={editInventoryForm.namaBarang}
+                                  onChange={(e) =>
+                                    setEditInventoryForm({
+                                      ...editInventoryForm,
+                                      namaBarang: e.target.value,
+                                    })
+                                  }
+                                />
                               </TableCell>
                               <TableCell>
-                                <Input value={editInventoryForm.kategori} onChange={(e) => setEditInventoryForm({...editInventoryForm, kategori: e.target.value})} />
+                                <Input
+                                  value={editInventoryForm.kategori}
+                                  onChange={(e) =>
+                                    setEditInventoryForm({
+                                      ...editInventoryForm,
+                                      kategori: e.target.value,
+                                    })
+                                  }
+                                />
                               </TableCell>
                               <TableCell>
-                                <Input value={editInventoryForm.spesifikasi} onChange={(e) => setEditInventoryForm({...editInventoryForm, spesifikasi: e.target.value})} />
+                                <Input
+                                  value={editInventoryForm.spesifikasi}
+                                  onChange={(e) =>
+                                    setEditInventoryForm({
+                                      ...editInventoryForm,
+                                      spesifikasi: e.target.value,
+                                    })
+                                  }
+                                />
                               </TableCell>
                               <TableCell>
-                                <Input type="number" value={editInventoryForm.stokTersedia} onChange={(e) => setEditInventoryForm({...editInventoryForm, stokTersedia: parseInt(e.target.value) || 0})} />
+                                <Input
+                                  type="number"
+                                  value={editInventoryForm.stokTersedia}
+                                  onChange={(e) =>
+                                    setEditInventoryForm({
+                                      ...editInventoryForm,
+                                      stokTersedia:
+                                        parseInt(e.target.value) || 0,
+                                    })
+                                  }
+                                />
                               </TableCell>
                               <TableCell>
-                                <Select value={editInventoryForm.kondisi} onValueChange={(value) => setEditInventoryForm({...editInventoryForm, kondisi: value})}>
+                                <Select
+                                  value={editInventoryForm.kondisi}
+                                  onValueChange={(value) =>
+                                    setEditInventoryForm({
+                                      ...editInventoryForm,
+                                      kondisi: value,
+                                    })
+                                  }
+                                >
                                   <SelectTrigger>
                                     <SelectValue />
                                   </SelectTrigger>
                                   <SelectContent>
                                     {kondisiOptions.map((kondisi) => (
-                                      <SelectItem key={kondisi} value={kondisi}>{kondisi}</SelectItem>
+                                      <SelectItem key={kondisi} value={kondisi}>
+                                        {kondisi}
+                                      </SelectItem>
                                     ))}
                                   </SelectContent>
                                 </Select>
@@ -843,14 +1089,28 @@ export default function Home() {
                             <>
                               <TableCell>{item.namaBarang}</TableCell>
                               <TableCell>{item.kategori}</TableCell>
-                              <TableCell className="max-w-xs truncate">{item.spesifikasi}</TableCell>
+                              <TableCell className="max-w-xs truncate">
+                                {item.spesifikasi}
+                              </TableCell>
                               <TableCell>
-                                <Badge variant={item.stokTersedia > 0 ? "default" : "destructive"}>
+                                <Badge
+                                  variant={
+                                    item.stokTersedia > 0
+                                      ? "default"
+                                      : "destructive"
+                                  }
+                                >
                                   {item.stokTersedia}
                                 </Badge>
                               </TableCell>
                               <TableCell>
-                                <Badge variant={item.kondisi === 'Baik' ? 'default' : 'secondary'}>
+                                <Badge
+                                  variant={
+                                    item.kondisi === "Baik"
+                                      ? "default"
+                                      : "secondary"
+                                  }
+                                >
                                   {item.kondisi}
                                 </Badge>
                               </TableCell>
@@ -860,22 +1120,36 @@ export default function Home() {
                             <div className="flex gap-2 justify-center">
                               {editingInventoryItem === item.id ? (
                                 <>
-                                  <Button size="sm" onClick={handleSaveInventoryEdit} className="bg-emerald-600 hover:bg-emerald-700">
+                                  <Button
+                                    size="sm"
+                                    onClick={handleSaveInventoryEdit}
+                                    className="bg-emerald-600 hover:bg-emerald-700"
+                                  >
                                     <Save className="w-4 h-4" />
                                   </Button>
-                                  <Button size="sm" variant="outline" onClick={handleCancelInventoryEdit}>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={handleCancelInventoryEdit}
+                                  >
                                     <X className="w-4 h-4" />
                                   </Button>
                                 </>
                               ) : (
                                 <>
-                                  <Button size="sm" variant="outline" onClick={() => handleEditInventory(item)}>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => handleEditInventory(item)}
+                                  >
                                     <Edit2 className="w-4 h-4" />
                                   </Button>
-                                  <Button 
-                                    size="sm" 
-                                    variant="outline" 
-                                    onClick={() => handleDeleteInventory(item.id)} 
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() =>
+                                      handleDeleteInventory(item.id)
+                                    }
                                     className="text-red-600 hover:text-red-700 hover:bg-red-50"
                                   >
                                     <Trash2 className="w-4 h-4" />
@@ -899,7 +1173,10 @@ export default function Home() {
               <h2 className="text-3xl font-bold text-slate-800">
                 Form Input Permintaan
               </h2>
-              <Dialog open={isAddPermintaanOpen} onOpenChange={setIsAddPermintaanOpen}>
+              <Dialog
+                open={isAddPermintaanOpen}
+                onOpenChange={setIsAddPermintaanOpen}
+              >
                 <DialogTrigger asChild>
                   <Button className="bg-emerald-700 hover:bg-emerald-800 text-white">
                     <Plus className="w-4 h-4 mr-2" />
@@ -917,8 +1194,18 @@ export default function Home() {
                   </DialogHeader>
                   <div className="grid gap-4 py-4 max-h-96 overflow-y-auto">
                     <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="namaDivisi" className="text-right">Divisi</Label>
-                      <Select value={newPermintaan.namaDivisi} onValueChange={(value) => setNewPermintaan({...newPermintaan, namaDivisi: value})}>
+                      <Label htmlFor="namaDivisi" className="text-right">
+                        Divisi
+                      </Label>
+                      <Select
+                        value={newPermintaan.namaDivisi}
+                        onValueChange={(value) =>
+                          setNewPermintaan({
+                            ...newPermintaan,
+                            namaDivisi: value,
+                          })
+                        }
+                      >
                         <SelectTrigger className="col-span-3">
                           <SelectValue placeholder="Pilih divisi" />
                         </SelectTrigger>
@@ -926,7 +1213,9 @@ export default function Home() {
                           {divisiOptions.map((divisi) => (
                             <SelectItem key={divisi} value={divisi}>
                               <div className="flex items-center gap-2">
-                                <div className={`w-3 h-3 rounded-full ${divisiColors[divisi as keyof typeof divisiColors].bg}`}></div>
+                                <div
+                                  className={`w-3 h-3 rounded-full ${divisiColors[divisi as keyof typeof divisiColors].bg}`}
+                                ></div>
                                 {divisi}
                               </div>
                             </SelectItem>
@@ -935,36 +1224,59 @@ export default function Home() {
                       </Select>
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="namaBarang" className="text-right">Nama Barang</Label>
+                      <Label htmlFor="namaBarang" className="text-right">
+                        Nama Barang
+                      </Label>
                       <Input
                         id="namaBarang"
                         value={newPermintaan.namaBarang}
-                        onChange={(e) => setNewPermintaan({...newPermintaan, namaBarang: e.target.value})}
+                        onChange={(e) =>
+                          setNewPermintaan({
+                            ...newPermintaan,
+                            namaBarang: e.target.value,
+                          })
+                        }
                         className="col-span-3"
                       />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="jumlahDiminta" className="text-right">Jumlah</Label>
+                      <Label htmlFor="jumlahDiminta" className="text-right">
+                        Jumlah
+                      </Label>
                       <Input
                         id="jumlahDiminta"
                         type="number"
                         value={newPermintaan.jumlahDiminta}
-                        onChange={(e) => setNewPermintaan({...newPermintaan, jumlahDiminta: parseInt(e.target.value) || 0})}
+                        onChange={(e) =>
+                          setNewPermintaan({
+                            ...newPermintaan,
+                            jumlahDiminta: parseInt(e.target.value) || 0,
+                          })
+                        }
                         className="col-span-3"
                       />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="hargaSatuan" className="text-right">Harga Satuan</Label>
+                      <Label htmlFor="hargaSatuan" className="text-right">
+                        Harga Satuan
+                      </Label>
                       <Input
                         id="hargaSatuan"
                         type="number"
                         value={newPermintaan.hargaSatuan}
-                        onChange={(e) => setNewPermintaan({...newPermintaan, hargaSatuan: parseFloat(e.target.value) || 0})}
+                        onChange={(e) =>
+                          setNewPermintaan({
+                            ...newPermintaan,
+                            hargaSatuan: parseFloat(e.target.value) || 0,
+                          })
+                        }
                         className="col-span-3"
                       />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="totalHarga" className="text-right">Total Harga</Label>
+                      <Label htmlFor="totalHarga" className="text-right">
+                        Total Harga
+                      </Label>
                       <Input
                         id="totalHarga"
                         type="number"
@@ -974,67 +1286,121 @@ export default function Home() {
                       />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="prioritas" className="text-right">Prioritas</Label>
-                      <Select value={newPermintaan.prioritas} onValueChange={(value) => setNewPermintaan({...newPermintaan, prioritas: value})}>
+                      <Label htmlFor="prioritas" className="text-right">
+                        Prioritas
+                      </Label>
+                      <Select
+                        value={newPermintaan.prioritas}
+                        onValueChange={(value) =>
+                          setNewPermintaan({
+                            ...newPermintaan,
+                            prioritas: value,
+                          })
+                        }
+                      >
                         <SelectTrigger className="col-span-3">
                           <SelectValue placeholder="Pilih prioritas" />
                         </SelectTrigger>
                         <SelectContent>
                           {prioritasOptions.map((prioritas) => (
-                            <SelectItem key={prioritas} value={prioritas}>{prioritas}</SelectItem>
+                            <SelectItem key={prioritas} value={prioritas}>
+                              {prioritas}
+                            </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="kebutuhanKhusus" className="text-right">Kebutuhan Khusus</Label>
+                      <Label htmlFor="kebutuhanKhusus" className="text-right">
+                        Kebutuhan Khusus
+                      </Label>
                       <Textarea
                         id="kebutuhanKhusus"
                         value={newPermintaan.kebutuhanKhusus}
-                        onChange={(e) => setNewPermintaan({...newPermintaan, kebutuhanKhusus: e.target.value})}
+                        onChange={(e) =>
+                          setNewPermintaan({
+                            ...newPermintaan,
+                            kebutuhanKhusus: e.target.value,
+                          })
+                        }
                         className="col-span-3"
                         rows={2}
                       />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="diperlukanPada" className="text-right">Diperlukan Pada</Label>
+                      <Label htmlFor="diperlukanPada" className="text-right">
+                        Diperlukan Pada
+                      </Label>
                       <Input
                         id="diperlukanPada"
                         type="date"
                         value={newPermintaan.diperlukanPada}
-                        onChange={(e) => setNewPermintaan({...newPermintaan, diperlukanPada: e.target.value})}
+                        onChange={(e) =>
+                          setNewPermintaan({
+                            ...newPermintaan,
+                            diperlukanPada: e.target.value,
+                          })
+                        }
                         className="col-span-3"
                       />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="statusPermintaan" className="text-right">Status</Label>
-                      <Select value={newPermintaan.statusPermintaan} onValueChange={(value) => setNewPermintaan({...newPermintaan, statusPermintaan: value})}>
+                      <Label htmlFor="statusPermintaan" className="text-right">
+                        Status
+                      </Label>
+                      <Select
+                        value={newPermintaan.statusPermintaan}
+                        onValueChange={(value) =>
+                          setNewPermintaan({
+                            ...newPermintaan,
+                            statusPermintaan: value,
+                          })
+                        }
+                      >
                         <SelectTrigger className="col-span-3">
                           <SelectValue placeholder="Pilih status" />
                         </SelectTrigger>
                         <SelectContent>
                           {statusOptions.map((status) => (
-                            <SelectItem key={status} value={status}>{status}</SelectItem>
+                            <SelectItem key={status} value={status}>
+                              {status}
+                            </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
-                      <Label htmlFor="catatanPerlengkapan" className="text-right">Catatan</Label>
+                      <Label
+                        htmlFor="catatanPerlengkapan"
+                        className="text-right"
+                      >
+                        Catatan
+                      </Label>
                       <Textarea
                         id="catatanPerlengkapan"
                         value={newPermintaan.catatanPerlengkapan}
-                        onChange={(e) => setNewPermintaan({...newPermintaan, catatanPerlengkapan: e.target.value})}
+                        onChange={(e) =>
+                          setNewPermintaan({
+                            ...newPermintaan,
+                            catatanPerlengkapan: e.target.value,
+                          })
+                        }
                         className="col-span-3"
                         rows={2}
                       />
                     </div>
                   </div>
                   <div className="flex justify-end gap-2">
-                    <Button variant="outline" onClick={() => setIsAddPermintaanOpen(false)}>
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsAddPermintaanOpen(false)}
+                    >
                       Batal
                     </Button>
-                    <Button onClick={handleAddPermintaan} className="bg-emerald-700 hover:bg-emerald-800">
+                    <Button
+                      onClick={handleAddPermintaan}
+                      className="bg-emerald-700 hover:bg-emerald-800"
+                    >
                       Simpan
                     </Button>
                   </div>
@@ -1048,26 +1414,41 @@ export default function Home() {
                   <Table>
                     <TableHeader>
                       <TableRow className="bg-gray-50">
-                        <TableHead className="font-semibold">Timestamp</TableHead>
+                        <TableHead className="font-semibold">
+                          Timestamp
+                        </TableHead>
                         <TableHead className="font-semibold">Divisi</TableHead>
-                        <TableHead className="font-semibold">Nama Barang</TableHead>
+                        <TableHead className="font-semibold">
+                          Nama Barang
+                        </TableHead>
                         <TableHead className="font-semibold">Jumlah</TableHead>
                         <TableHead className="font-semibold">Harga</TableHead>
                         <TableHead className="font-semibold">Total</TableHead>
-                        <TableHead className="font-semibold">Biaya Aktual</TableHead>
-                        <TableHead className="font-semibold">Prioritas</TableHead>
+                        <TableHead className="font-semibold">
+                          Biaya Aktual
+                        </TableHead>
+                        <TableHead className="font-semibold">
+                          Prioritas
+                        </TableHead>
                         <TableHead className="font-semibold">Status</TableHead>
                         <TableHead className="font-semibold">Aksi</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {filteredPermintaan.map((item) => (
-                        <TableRow key={item.id} className={`hover:bg-gray-50 ${divisiColors[item.namaDivisi as keyof typeof divisiColors].hover}`}>
+                        <TableRow
+                          key={item.id}
+                          className={`hover:bg-gray-50 ${divisiColors[item.namaDivisi as keyof typeof divisiColors].hover}`}
+                        >
                           <TableCell className="font-medium">
-                            {new Date(item.timestamp).toLocaleDateString('id-ID')}
+                            {new Date(item.timestamp).toLocaleDateString(
+                              "id-ID",
+                            )}
                           </TableCell>
                           <TableCell>
-                            <Badge className={`${divisiColors[item.namaDivisi as keyof typeof divisiColors].bg} text-white`}>
+                            <Badge
+                              className={`${divisiColors[item.namaDivisi as keyof typeof divisiColors].bg} text-white`}
+                            >
                               {item.namaDivisi}
                             </Badge>
                           </TableCell>
@@ -1075,7 +1456,12 @@ export default function Home() {
                             {editingItem === item.id ? (
                               <Input
                                 value={editForm.namaBarang}
-                                onChange={(e) => setEditForm({...editForm, namaBarang: e.target.value})}
+                                onChange={(e) =>
+                                  setEditForm({
+                                    ...editForm,
+                                    namaBarang: e.target.value,
+                                  })
+                                }
                                 className="w-full"
                               />
                             ) : (
@@ -1087,7 +1473,13 @@ export default function Home() {
                               <Input
                                 type="number"
                                 value={editForm.jumlahDiminta}
-                                onChange={(e) => setEditForm({...editForm, jumlahDiminta: parseInt(e.target.value) || 0})}
+                                onChange={(e) =>
+                                  setEditForm({
+                                    ...editForm,
+                                    jumlahDiminta:
+                                      parseInt(e.target.value) || 0,
+                                  })
+                                }
                                 className="w-full"
                               />
                             ) : (
@@ -1099,11 +1491,19 @@ export default function Home() {
                               <Input
                                 type="number"
                                 value={editForm.hargaSatuan}
-                                onChange={(e) => setEditForm({...editForm, hargaSatuan: parseFloat(e.target.value) || 0})}
+                                onChange={(e) =>
+                                  setEditForm({
+                                    ...editForm,
+                                    hargaSatuan:
+                                      parseFloat(e.target.value) || 0,
+                                  })
+                                }
                                 className="w-full"
                               />
+                            ) : item.hargaSatuan ? (
+                              `Rp ${item.hargaSatuan.toLocaleString("id-ID")}`
                             ) : (
-                              item.hargaSatuan ? `Rp ${item.hargaSatuan.toLocaleString('id-ID')}` : '-'
+                              "-"
                             )}
                           </TableCell>
                           <TableCell>
@@ -1111,11 +1511,18 @@ export default function Home() {
                               <Input
                                 type="number"
                                 value={editForm.totalHarga}
-                                onChange={(e) => setEditForm({...editForm, totalHarga: parseFloat(e.target.value) || 0})}
+                                onChange={(e) =>
+                                  setEditForm({
+                                    ...editForm,
+                                    totalHarga: parseFloat(e.target.value) || 0,
+                                  })
+                                }
                                 className="w-full"
                               />
+                            ) : item.totalHarga ? (
+                              `Rp ${item.totalHarga.toLocaleString("id-ID")}`
                             ) : (
-                              item.totalHarga ? `Rp ${item.totalHarga.toLocaleString('id-ID')}` : '-'
+                              "-"
                             )}
                           </TableCell>
                           <TableCell>
@@ -1123,48 +1530,84 @@ export default function Home() {
                               <Input
                                 type="number"
                                 placeholder="Masukkan biaya riil"
-                                value={editForm.totalBiayaAktual || ''}
-                                onChange={(e) => setEditForm({...editForm, totalBiayaAktual: parseFloat(e.target.value) || 0})}
+                                value={editForm.totalBiayaAktual || ""}
+                                onChange={(e) =>
+                                  setEditForm({
+                                    ...editForm,
+                                    totalBiayaAktual:
+                                      parseFloat(e.target.value) || 0,
+                                  })
+                                }
                                 className="w-full"
                               />
+                            ) : item.totalBiayaAktual ? (
+                              `Rp ${item.totalBiayaAktual.toLocaleString("id-ID")}`
                             ) : (
-                              item.totalBiayaAktual ? `Rp ${item.totalBiayaAktual.toLocaleString('id-ID')}` : '-'
+                              "-"
                             )}
                           </TableCell>
                           <TableCell>
                             {editingItem === item.id ? (
-                              <Select value={editForm.prioritas} onValueChange={(value) => setEditForm({...editForm, prioritas: value})}>
+                              <Select
+                                value={editForm.prioritas}
+                                onValueChange={(value) =>
+                                  setEditForm({ ...editForm, prioritas: value })
+                                }
+                              >
                                 <SelectTrigger className="w-full">
                                   <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
                                   {prioritasOptions.map((prioritas) => (
-                                    <SelectItem key={prioritas} value={prioritas}>{prioritas}</SelectItem>
+                                    <SelectItem
+                                      key={prioritas}
+                                      value={prioritas}
+                                    >
+                                      {prioritas}
+                                    </SelectItem>
                                   ))}
                                 </SelectContent>
                               </Select>
                             ) : (
-                              <Badge className={getPriorityColor(item.prioritas)}>
+                              <Badge
+                                className={getPriorityColor(item.prioritas)}
+                              >
                                 {item.prioritas}
                               </Badge>
                             )}
                           </TableCell>
                           <TableCell>
                             {editingItem === item.id ? (
-                              <Select value={editForm.statusPermintaan} onValueChange={(value) => setEditForm({...editForm, statusPermintaan: value})}>
+                              <Select
+                                value={editForm.statusPermintaan}
+                                onValueChange={(value) =>
+                                  setEditForm({
+                                    ...editForm,
+                                    statusPermintaan: value,
+                                  })
+                                }
+                              >
                                 <SelectTrigger className="w-full">
                                   <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
                                   {statusOptions.map((status) => (
-                                    <SelectItem key={status} value={status}>{status}</SelectItem>
+                                    <SelectItem key={status} value={status}>
+                                      {status}
+                                    </SelectItem>
                                   ))}
                                 </SelectContent>
                               </Select>
                             ) : (
-                              <Badge className={getStatusColor(item.statusPermintaan)}>
+                              <Badge
+                                className={getStatusColor(
+                                  item.statusPermintaan,
+                                )}
+                              >
                                 {getStatusIcon(item.statusPermintaan)}
-                                <span className="ml-1">{item.statusPermintaan}</span>
+                                <span className="ml-1">
+                                  {item.statusPermintaan}
+                                </span>
                               </Badge>
                             )}
                           </TableCell>
@@ -1172,19 +1615,36 @@ export default function Home() {
                             <div className="flex gap-2">
                               {editingItem === item.id ? (
                                 <>
-                                  <Button size="sm" onClick={handleSaveEdit} className="bg-emerald-600 hover:bg-emerald-700">
+                                  <Button
+                                    size="sm"
+                                    onClick={handleSaveEdit}
+                                    className="bg-emerald-600 hover:bg-emerald-700"
+                                  >
                                     <Save className="w-4 h-4" />
                                   </Button>
-                                  <Button size="sm" variant="outline" onClick={() => setEditingItem(null)}>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => setEditingItem(null)}
+                                  >
                                     <X className="w-4 h-4" />
                                   </Button>
                                 </>
                               ) : (
                                 <>
-                                  <Button size="sm" variant="outline" onClick={() => handleEdit(item)}>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => handleEdit(item)}
+                                  >
                                     <Edit2 className="w-4 h-4" />
                                   </Button>
-                                  <Button size="sm" variant="outline" onClick={() => handleDelete(item.id)} className="text-red-600 hover:text-red-700">
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => handleDelete(item.id)}
+                                    className="text-red-600 hover:text-red-700"
+                                  >
                                     <Trash2 className="w-4 h-4" />
                                   </Button>
                                 </>
@@ -1209,67 +1669,128 @@ export default function Home() {
             {/* Filter Section - DIPINDAHKAN KE SINI */}
             <div className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
               <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                <Input 
+                <Input
                   placeholder="Cari nama barang..."
                   value={permintaanFilters.search}
-                  onChange={(e) => setPermintaanFilters({...permintaanFilters, search: e.target.value})}
+                  onChange={(e) =>
+                    setPermintaanFilters({
+                      ...permintaanFilters,
+                      search: e.target.value,
+                    })
+                  }
                 />
-                <Select value={permintaanFilters.divisi} onValueChange={(value) => setPermintaanFilters({...permintaanFilters, divisi: value})}>
+                <Select
+                  value={permintaanFilters.divisi}
+                  onValueChange={(value) =>
+                    setPermintaanFilters({
+                      ...permintaanFilters,
+                      divisi: value,
+                    })
+                  }
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Filter Divisi" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Semua">Semua Divisi</SelectItem>
-                    {divisiOptions.map(opt => <SelectItem key={opt} value={opt}>{opt}</SelectItem>)}
+                    {divisiOptions.map((opt) => (
+                      <SelectItem key={opt} value={opt}>
+                        {opt}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
-                <Select value={permintaanFilters.prioritas} onValueChange={(value) => setPermintaanFilters({...permintaanFilters, prioritas: value})}>
+                <Select
+                  value={permintaanFilters.prioritas}
+                  onValueChange={(value) =>
+                    setPermintaanFilters({
+                      ...permintaanFilters,
+                      prioritas: value,
+                    })
+                  }
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Filter Prioritas" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Semua">Semua Prioritas</SelectItem>
-                    {prioritasOptions.map(opt => <SelectItem key={opt} value={opt}>{opt}</SelectItem>)}
+                    {prioritasOptions.map((opt) => (
+                      <SelectItem key={opt} value={opt}>
+                        {opt}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
-                <Select value={permintaanFilters.status} onValueChange={(value) => setPermintaanFilters({...permintaanFilters, status: value})}>
+                <Select
+                  value={permintaanFilters.status}
+                  onValueChange={(value) =>
+                    setPermintaanFilters({
+                      ...permintaanFilters,
+                      status: value,
+                    })
+                  }
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Filter Status" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Semua">Semua Status</SelectItem>
-                    {statusOptions.map(opt => <SelectItem key={opt} value={opt}>{opt}</SelectItem>)}
+                    {statusOptions.map((opt) => (
+                      <SelectItem key={opt} value={opt}>
+                        {opt}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 <div className="flex gap-2 col-span-1 md:col-span-2 lg:col-span-1">
-                  <Button 
-                    variant="outline" 
-                    onClick={() => setPermintaanFilters({ divisi: 'Semua', prioritas: 'Semua', status: 'Semua', search: '' })}
+                  <Button
+                    variant="outline"
+                    onClick={() =>
+                      setPermintaanFilters({
+                        divisi: "Semua",
+                        prioritas: "Semua",
+                        status: "Semua",
+                        search: "",
+                      })
+                    }
                     className="w-full"
                   >
                     <FilterX className="w-4 h-4 mr-2" />
                     Reset
                   </Button>
-                  <Button onClick={handleExportToCSV} className="w-full bg-emerald-700 hover:bg-emerald-800">
+                  <Button
+                    onClick={handleExportToCSV}
+                    className="w-full bg-emerald-700 hover:bg-emerald-800"
+                  >
                     <FileDown className="w-4 h-4 mr-2" />
                     Ekspor
                   </Button>
                 </div>
               </div>
             </div>
-            
+
             <div className="space-y-8">
               {divisiOptions.map((divisi) => {
                 // Menggunakan data yang sudah difilter
-                const divisiPermintaan = filteredPermintaan.filter(item => item.namaDivisi === divisi)
-                const colors = divisiColors[divisi as keyof typeof divisiColors]
+                const divisiPermintaan = filteredPermintaan.filter(
+                  (item) => item.namaDivisi === divisi,
+                );
+                const colors =
+                  divisiColors[divisi as keyof typeof divisiColors];
                 return divisiPermintaan.length > 0 ? (
-                  <Card key={divisi} className="bg-white shadow-sm border border-gray-200">
-                    <CardHeader className={`${colors.light} ${colors.border} border-l-4`}>
+                  <Card
+                    key={divisi}
+                    className="bg-white shadow-sm border border-gray-200"
+                  >
+                    <CardHeader
+                      className={`${colors.light} ${colors.border} border-l-4`}
+                    >
                       <div className="flex items-center justify-between">
                         <div>
                           <CardTitle className="flex items-center gap-3">
-                            <div className={`w-4 h-4 rounded-full ${colors.bg}`}></div>
+                            <div
+                              className={`w-4 h-4 rounded-full ${colors.bg}`}
+                            ></div>
                             Kebutuhan Divisi {divisi}
                           </CardTitle>
                           <CardDescription>
@@ -1286,43 +1807,79 @@ export default function Home() {
                         <Table>
                           <TableHeader>
                             <TableRow className="bg-gray-50">
-                              <TableHead className="font-semibold">Tanggal</TableHead>
-                              <TableHead className="font-semibold">Nama Barang</TableHead>
-                              <TableHead className="font-semibold">Jumlah</TableHead>
-                              <TableHead className="font-semibold">Harga</TableHead>
-                              <TableHead className="font-semibold">Total</TableHead>
-                              <TableHead className="font-semibold">Prioritas</TableHead>
-                              <TableHead className="font-semibold">Status</TableHead>
-                              <TableHead className="font-semibold">Catatan</TableHead>
+                              <TableHead className="font-semibold">
+                                Tanggal
+                              </TableHead>
+                              <TableHead className="font-semibold">
+                                Nama Barang
+                              </TableHead>
+                              <TableHead className="font-semibold">
+                                Jumlah
+                              </TableHead>
+                              <TableHead className="font-semibold">
+                                Harga
+                              </TableHead>
+                              <TableHead className="font-semibold">
+                                Total
+                              </TableHead>
+                              <TableHead className="font-semibold">
+                                Prioritas
+                              </TableHead>
+                              <TableHead className="font-semibold">
+                                Status
+                              </TableHead>
+                              <TableHead className="font-semibold">
+                                Catatan
+                              </TableHead>
                             </TableRow>
                           </TableHeader>
                           <TableBody>
                             {divisiPermintaan.map((item) => (
-                              <TableRow key={item.id} onClick={() => handleRincianClick(item)} className={`cursor-pointer hover:bg-gray-50 ${colors.hover}`}>
+                              <TableRow
+                                key={item.id}
+                                onClick={() => handleRincianClick(item)}
+                                className={`cursor-pointer hover:bg-gray-50 ${colors.hover}`}
+                              >
                                 <TableCell className="font-medium">
-                                  {new Date(item.timestamp).toLocaleDateString('id-ID')}
+                                  {new Date(item.timestamp).toLocaleDateString(
+                                    "id-ID",
+                                  )}
                                 </TableCell>
                                 <TableCell>{item.namaBarang}</TableCell>
                                 <TableCell>{item.jumlahDiminta}</TableCell>
                                 <TableCell>
-                                  {item.hargaSatuan ? `Rp ${item.hargaSatuan.toLocaleString('id-ID')}` : '-'}
+                                  {item.hargaSatuan
+                                    ? `Rp ${item.hargaSatuan.toLocaleString("id-ID")}`
+                                    : "-"}
                                 </TableCell>
                                 <TableCell>
-                                  {item.totalHarga ? `Rp ${item.totalHarga.toLocaleString('id-ID')}` : '-'}
+                                  {item.totalHarga
+                                    ? `Rp ${item.totalHarga.toLocaleString("id-ID")}`
+                                    : "-"}
                                 </TableCell>
                                 <TableCell>
-                                  <Badge className={getPriorityColor(item.prioritas)}>
+                                  <Badge
+                                    className={getPriorityColor(item.prioritas)}
+                                  >
                                     {item.prioritas}
                                   </Badge>
                                 </TableCell>
                                 <TableCell>
-                                  <Badge className={getStatusColor(item.statusPermintaan)}>
+                                  <Badge
+                                    className={getStatusColor(
+                                      item.statusPermintaan,
+                                    )}
+                                  >
                                     {getStatusIcon(item.statusPermintaan)}
-                                    <span className="ml-1">{item.statusPermintaan}</span>
+                                    <span className="ml-1">
+                                      {item.statusPermintaan}
+                                    </span>
                                   </Badge>
                                 </TableCell>
                                 <TableCell className="max-w-xs truncate">
-                                  {item.catatanPerlengkapan || item.kebutuhanKhusus || '-'}
+                                  {item.catatanPerlengkapan ||
+                                    item.kebutuhanKhusus ||
+                                    "-"}
                                 </TableCell>
                               </TableRow>
                             ))}
@@ -1331,70 +1888,135 @@ export default function Home() {
                       </div>
                     </CardContent>
                   </Card>
-                ) : null
+                ) : null;
               })}
             </div>
           </TabsContent>
         </Tabs>
 
         {/* Dialog untuk Detail Rincian */}
-        <Dialog open={isRincianDetailOpen} onOpenChange={setIsRincianDetailOpen}>
+        <Dialog
+          open={isRincianDetailOpen}
+          onOpenChange={setIsRincianDetailOpen}
+        >
           <DialogContent className="sm:max-w-lg bg-white">
             <DialogHeader>
               <DialogTitle className="text-2xl font-bold text-slate-800">
                 Detail Permintaan Barang
               </DialogTitle>
               <DialogDescription>
-                Rincian lengkap untuk item <span className="font-semibold text-slate-700">{selectedRincianItem?.namaBarang}</span> dari Divisi {selectedRincianItem?.namaDivisi}.
+                Rincian lengkap untuk item{" "}
+                <span className="font-semibold text-slate-700">
+                  {selectedRincianItem?.namaBarang}
+                </span>{" "}
+                dari Divisi {selectedRincianItem?.namaDivisi}.
               </DialogDescription>
             </DialogHeader>
             {selectedRincianItem && (
               <div className="mt-4 space-y-4 max-h-[70vh] overflow-y-auto pr-2">
                 <div className="grid grid-cols-3 gap-x-4 gap-y-2 p-3 rounded-lg border bg-gray-50">
-                  <div className="col-span-1 text-sm font-medium text-gray-500">Nama Barang</div>
-                  <div className="col-span-2 font-semibold text-slate-800">{selectedRincianItem.namaBarang}</div>
-                  
-                  <div className="col-span-1 text-sm font-medium text-gray-500">Divisi</div>
-                  <div className="col-span-2"><Badge className={`${divisiColors[selectedRincianItem.namaDivisi as keyof typeof divisiColors].bg} text-white`}>{selectedRincianItem.namaDivisi}</Badge></div>
-                  
-                  <div className="col-span-1 text-sm font-medium text-gray-500">Jumlah</div>
-                  <div className="col-span-2 font-semibold text-slate-800">{selectedRincianItem.jumlahDiminta} unit</div>
+                  <div className="col-span-1 text-sm font-medium text-gray-500">
+                    Nama Barang
+                  </div>
+                  <div className="col-span-2 font-semibold text-slate-800">
+                    {selectedRincianItem.namaBarang}
+                  </div>
+
+                  <div className="col-span-1 text-sm font-medium text-gray-500">
+                    Divisi
+                  </div>
+                  <div className="col-span-2">
+                    <Badge
+                      className={`${divisiColors[selectedRincianItem.namaDivisi as keyof typeof divisiColors].bg} text-white`}
+                    >
+                      {selectedRincianItem.namaDivisi}
+                    </Badge>
+                  </div>
+
+                  <div className="col-span-1 text-sm font-medium text-gray-500">
+                    Jumlah
+                  </div>
+                  <div className="col-span-2 font-semibold text-slate-800">
+                    {selectedRincianItem.jumlahDiminta} unit
+                  </div>
                 </div>
 
                 <div className="grid grid-cols-3 gap-x-4 gap-y-2 p-3 rounded-lg border">
-                  <div className="col-span-1 text-sm font-medium text-gray-500">Prioritas</div>
-                  <div className="col-span-2"><Badge className={getPriorityColor(selectedRincianItem.prioritas)}>{selectedRincianItem.prioritas}</Badge></div>
-
-                  <div className="col-span-1 text-sm font-medium text-gray-500">Status</div>
+                  <div className="col-span-1 text-sm font-medium text-gray-500">
+                    Prioritas
+                  </div>
                   <div className="col-span-2">
-                    <Badge className={getStatusColor(selectedRincianItem.statusPermintaan)}>
+                    <Badge
+                      className={getPriorityColor(
+                        selectedRincianItem.prioritas,
+                      )}
+                    >
+                      {selectedRincianItem.prioritas}
+                    </Badge>
+                  </div>
+
+                  <div className="col-span-1 text-sm font-medium text-gray-500">
+                    Status
+                  </div>
+                  <div className="col-span-2">
+                    <Badge
+                      className={getStatusColor(
+                        selectedRincianItem.statusPermintaan,
+                      )}
+                    >
                       {getStatusIcon(selectedRincianItem.statusPermintaan)}
-                      <span className="ml-1">{selectedRincianItem.statusPermintaan}</span>
+                      <span className="ml-1">
+                        {selectedRincianItem.statusPermintaan}
+                      </span>
                     </Badge>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-3 gap-x-4 gap-y-2 p-3 rounded-lg border bg-gray-50">
-                  <div className="col-span-1 text-sm font-medium text-gray-500">Estimasi Harga</div>
-                  <div className="col-span-2 font-semibold text-slate-800">{selectedRincianItem.totalHarga ? `Rp ${selectedRincianItem.totalHarga.toLocaleString('id-ID')}` : '-'}</div>
-                  
-                  <div className="col-span-1 text-sm font-medium text-gray-500">Biaya Aktual</div>
-                  <div className="col-span-2 font-semibold text-emerald-600">{selectedRincianItem.totalBiayaAktual ? `Rp ${selectedRincianItem.totalBiayaAktual.toLocaleString('id-ID')}` : 'Belum diisi'}</div>
+                  <div className="col-span-1 text-sm font-medium text-gray-500">
+                    Estimasi Harga
+                  </div>
+                  <div className="col-span-2 font-semibold text-slate-800">
+                    {selectedRincianItem.totalHarga
+                      ? `Rp ${selectedRincianItem.totalHarga.toLocaleString("id-ID")}`
+                      : "-"}
+                  </div>
+
+                  <div className="col-span-1 text-sm font-medium text-gray-500">
+                    Biaya Aktual
+                  </div>
+                  <div className="col-span-2 font-semibold text-emerald-600">
+                    {selectedRincianItem.totalBiayaAktual
+                      ? `Rp ${selectedRincianItem.totalBiayaAktual.toLocaleString("id-ID")}`
+                      : "Belum diisi"}
+                  </div>
                 </div>
 
                 <div className="space-y-3 p-3 rounded-lg border">
                   <div>
-                    <Label className="text-sm font-medium text-gray-500">Kebutuhan Khusus</Label>
-                    <p className="text-sm text-slate-700 mt-1 p-2 bg-gray-50 rounded-md min-h-[40px]">{selectedRincianItem.kebutuhanKhusus || '-'}</p>
+                    <Label className="text-sm font-medium text-gray-500">
+                      Kebutuhan Khusus
+                    </Label>
+                    <p className="text-sm text-slate-700 mt-1 p-2 bg-gray-50 rounded-md min-h-[40px]">
+                      {selectedRincianItem.kebutuhanKhusus || "-"}
+                    </p>
                   </div>
                   <div>
-                    <Label className="text-sm font-medium text-gray-500">Catatan dari Perlengkapan</Label>
-                    <p className="text-sm text-slate-700 mt-1 p-2 bg-gray-50 rounded-md min-h-[40px]">{selectedRincianItem.catatanPerlengkapan || '-'}</p>
+                    <Label className="text-sm font-medium text-gray-500">
+                      Catatan dari Perlengkapan
+                    </Label>
+                    <p className="text-sm text-slate-700 mt-1 p-2 bg-gray-50 rounded-md min-h-[40px]">
+                      {selectedRincianItem.catatanPerlengkapan || "-"}
+                    </p>
                   </div>
                 </div>
 
                 <div className="text-xs text-center text-gray-400 pt-2">
-                  Diajukan pada: {new Date(selectedRincianItem.timestamp).toLocaleString('id-ID', { dateStyle: 'full', timeStyle: 'short' })}
+                  Diajukan pada:{" "}
+                  {new Date(selectedRincianItem.timestamp).toLocaleString(
+                    "id-ID",
+                    { dateStyle: "full", timeStyle: "short" },
+                  )}
                 </div>
               </div>
             )}
@@ -1402,5 +2024,5 @@ export default function Home() {
         </Dialog>
       </div>
     </main>
-  )
+  );
 }

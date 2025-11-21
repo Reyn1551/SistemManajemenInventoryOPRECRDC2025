@@ -1,27 +1,27 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { db } from '@/lib/db'
+import { NextRequest, NextResponse } from "next/server";
+import db from "@/lib/db";
 
 export async function GET() {
   try {
     const permintaan = await db.permintaan.findMany({
       orderBy: {
-        createdAt: 'desc'
-      }
-    })
+        createdAt: "desc",
+      },
+    });
 
-    return NextResponse.json(permintaan)
+    return NextResponse.json(permintaan);
   } catch (error) {
-    console.error('Error fetching permintaan:', error)
+    console.error("Error fetching permintaan:", error);
     return NextResponse.json(
-      { error: 'Failed to fetch permintaan' },
-      { status: 500 }
-    )
+      { error: "Failed to fetch permintaan" },
+      { status: 500 },
+    );
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
+    const body = await request.json();
     const {
       namaDivisi,
       namaBarang,
@@ -32,14 +32,20 @@ export async function POST(request: NextRequest) {
       kebutuhanKhusus,
       diperlukanPada,
       statusPermintaan,
-      catatanPerlengkapan
-    } = body
+      catatanPerlengkapan,
+    } = body;
 
-    if (!namaDivisi || !namaBarang || !jumlahDiminta || !prioritas || !statusPermintaan) {
+    if (
+      !namaDivisi ||
+      !namaBarang ||
+      !jumlahDiminta ||
+      !prioritas ||
+      !statusPermintaan
+    ) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
-        { status: 400 }
-      )
+        { error: "Missing required fields" },
+        { status: 400 },
+      );
     }
 
     const permintaan = await db.permintaan.create({
@@ -53,16 +59,16 @@ export async function POST(request: NextRequest) {
         kebutuhanKhusus,
         diperlukanPada: diperlukanPada ? new Date(diperlukanPada) : null,
         statusPermintaan,
-        catatanPerlengkapan
-      }
-    })
+        catatanPerlengkapan,
+      },
+    });
 
-    return NextResponse.json(permintaan, { status: 201 })
+    return NextResponse.json(permintaan, { status: 201 });
   } catch (error) {
-    console.error('Error creating permintaan:', error)
+    console.error("Error creating permintaan:", error);
     return NextResponse.json(
-      { error: 'Failed to create permintaan' },
-      { status: 500 }
-    )
+      { error: "Failed to create permintaan" },
+      { status: 500 },
+    );
   }
 }
