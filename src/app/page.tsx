@@ -163,6 +163,10 @@ export default function Home() {
   const [editingItem, setEditingItem] = useState<string | null>(null)
   const [editForm, setEditForm] = useState<Partial<PermintaanItem>>({})
   
+  //state untuk dialog rincian
+  const [isRincianDetailOpen, setIsRincianDetailOpen] = useState(false)
+  const [selectedRincianItem, setSelectedRincianItem] = useState<PermintaanItem | null>(null)
+
   // State untuk autentikasi
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -388,6 +392,13 @@ export default function Home() {
       }
     }
   }
+
+  //Handler untuk membaca dialog rincian
+  const handleRincianClick = (item: PermintaanItem) => {
+    setSelectedRincianItem(item)
+    setIsRincianDetailOpen(true)
+  }
+
 
   // Fungsi yang akan dipanggil saat login berhasil
   const handleLoginSuccess = () => {
@@ -1057,7 +1068,7 @@ export default function Home() {
                             </TableHeader>
                             <TableBody>
                               {divisiPermintaan.map((item) => (
-                                <TableRow key={item.id} className={`hover:bg-gray-50 ${colors.hover}`}>
+                                <TableRow key={item.id} onClick={() => handleRincianClick(item)} className={`cursor-pointer hover:bg-gray-50 ${colors.hover}`}>
                                   <TableCell className="font-medium">
                                     {new Date(item.timestamp).toLocaleDateString('id-ID')}
                                   </TableCell>
@@ -1103,6 +1114,70 @@ export default function Home() {
             </div>
           </TabsContent>
         </Tabs>
+
+        {/* Dialog untuk Detail Rincian */}
+        <Dialog open={isRincianDetailOpen} onOpenChange={setIsRincianDetailOpen}>
+          <DialogContent className="sm:max-w-lg bg-white">
+            <DialogHeader>
+              <DialogTitle className="text-2xl font-bold text-slate-800">
+                Detail Permintaan Barang
+              </DialogTitle>
+              <DialogDescription>
+                Rincian lengkap untuk item <span className="font-semibold text-slate-700">{selectedRincianItem?.namaBarang}</span> dari Divisi {selectedRincianItem?.namaDivisi}.
+              </DialogDescription>
+            </DialogHeader>
+            {selectedRincianItem && (
+              <div className="mt-4 space-y-4 max-h-[70vh] overflow-y-auto pr-2">
+                <div className="grid grid-cols-3 gap-x-4 gap-y-2 p-3 rounded-lg border bg-gray-50">
+                  <div className="col-span-1 text-sm font-medium text-gray-500">Nama Barang</div>
+                  <div className="col-span-2 font-semibold text-slate-800">{selectedRincianItem.namaBarang}</div>
+                  
+                  <div className="col-span-1 text-sm font-medium text-gray-500">Divisi</div>
+                  <div className="col-span-2"><Badge className={`${divisiColors[selectedRincianItem.namaDivisi as keyof typeof divisiColors].bg} text-white`}>{selectedRincianItem.namaDivisi}</Badge></div>
+                  
+                  <div className="col-span-1 text-sm font-medium text-gray-500">Jumlah</div>
+                  <div className="col-span-2 font-semibold text-slate-800">{selectedRincianItem.jumlahDiminta} unit</div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-x-4 gap-y-2 p-3 rounded-lg border">
+                  <div className="col-span-1 text-sm font-medium text-gray-500">Prioritas</div>
+                  <div className="col-span-2"><Badge className={getPriorityColor(selectedRincianItem.prioritas)}>{selectedRincianItem.prioritas}</Badge></div>
+
+                  <div className="col-span-1 text-sm font-medium text-gray-500">Status</div>
+                  <div className="col-span-2">
+                    <Badge className={getStatusColor(selectedRincianItem.statusPermintaan)}>
+                      {getStatusIcon(selectedRincianItem.statusPermintaan)}
+                      <span className="ml-1">{selectedRincianItem.statusPermintaan}</span>
+                    </Badge>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-x-4 gap-y-2 p-3 rounded-lg border bg-gray-50">
+                  <div className="col-span-1 text-sm font-medium text-gray-500">Estimasi Harga</div>
+                  <div className="col-span-2 font-semibold text-slate-800">{selectedRincianItem.totalHarga ? `Rp ${selectedRincianItem.totalHarga.toLocaleString('id-ID')}` : '-'}</div>
+                  
+                  <div className="col-span-1 text-sm font-medium text-gray-500">Biaya Aktual</div>
+                  <div className="col-span-2 font-semibold text-emerald-600">{selectedRincianItem.totalBiayaAktual ? `Rp ${selectedRincianItem.totalBiayaAktual.toLocaleString('id-ID')}` : 'Belum diisi'}</div>
+                </div>
+
+                <div className="space-y-3 p-3 rounded-lg border">
+                  <div>
+                    <Label className="text-sm font-medium text-gray-500">Kebutuhan Khusus</Label>
+                    <p className="text-sm text-slate-700 mt-1 p-2 bg-gray-50 rounded-md min-h-[40px]">{selectedRincianItem.kebutuhanKhusus || '-'}</p>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium text-gray-500">Catatan dari Perlengkapan</Label>
+                    <p className="text-sm text-slate-700 mt-1 p-2 bg-gray-50 rounded-md min-h-[40px]">{selectedRincianItem.catatanPerlengkapan || '-'}</p>
+                  </div>
+                </div>
+
+                <div className="text-xs text-center text-gray-400 pt-2">
+                  Diajukan pada: {new Date(selectedRincianItem.timestamp).toLocaleString('id-ID', { dateStyle: 'full', timeStyle: 'short' })}
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </main>
   )
