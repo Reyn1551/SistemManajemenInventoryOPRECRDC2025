@@ -189,40 +189,58 @@ export default function Home() {
     catatanPerlengkapan: "",
   });
 
-  // Fetch data from API
+  // Fetch data from API (Terpisah Rada Lama)
+  // const fetchData = async () => {
+  //   // Mengambil data inventory secara terpisah
+  //   try {
+  //     const inventoryRes = await fetch("/api/inventory");
+  //     if (inventoryRes.ok) {
+  //       const inventoryData = await inventoryRes.json();
+  //       setInventory(inventoryData);
+  //     } else {
+  //       console.error("Failed to fetch inventory");
+  //       toast.error("Gagal memuat data inventory.");
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching inventory:", error);
+  //     toast.error("Terjadi kesalahan saat memuat data inventory.");
+  //   }
+
+  //   // Mengambil data permintaan secara terpisah
+  //   try {
+  //     const permintaanRes = await fetch("/api/permintaan");
+  //     if (permintaanRes.ok) {
+  //       const permintaanData = await permintaanRes.json();
+  //       setPermintaan(permintaanData);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching permintaan:", error);
+  //   }
+
+  //   // Mengambil data dashboard secara terpisah
+  //   try {
+  //     const dashboardRes = await fetch("/api/dashboard");
+  //     if (dashboardRes.ok) setDashboardStats(await dashboardRes.json());
+  //   } catch (error) {
+  //     console.error("Error fetching dashboard stats:", error);
+  //   }
+  // };
+
+  //Pakai metode promise.all untuk request paralel (Sering Error Datanya)
   const fetchData = async () => {
-    // Mengambil data inventory secara terpisah
     try {
-      const inventoryRes = await fetch("/api/inventory");
-      if (inventoryRes.ok) {
-        const inventoryData = await inventoryRes.json();
-        setInventory(inventoryData);
-      } else {
-        console.error("Failed to fetch inventory");
-        toast.error("Gagal memuat data inventory.");
-      }
-    } catch (error) {
-      console.error("Error fetching inventory:", error);
-      toast.error("Terjadi kesalahan saat memuat data inventory.");
-    }
+      const [inventoryRes, permintaanRes, dashboardRes] = await Promise.all([
+        fetch("/api/inventory"),
+        fetch("/api/permintaan"),
+        fetch("/api/dashboard"),
+      ]);
 
-    // Mengambil data permintaan secara terpisah
-    try {
-      const permintaanRes = await fetch("/api/permintaan");
-      if (permintaanRes.ok) {
-        const permintaanData = await permintaanRes.json();
-        setPermintaan(permintaanData);
-      }
-    } catch (error) {
-      console.error("Error fetching permintaan:", error);
-    }
-
-    // Mengambil data dashboard secara terpisah
-    try {
-      const dashboardRes = await fetch("/api/dashboard");
+      if (inventoryRes.ok) setInventory(await inventoryRes.json());
+      if (permintaanRes.ok) setPermintaan(await permintaanRes.json());
       if (dashboardRes.ok) setDashboardStats(await dashboardRes.json());
-    } catch (error) {
-      console.error("Error fetching dashboard stats:", error);
+    } catch (err) {
+      console.error("Error fetching data:", err);
+      toast.error("Gagal memuat data.");
     }
   };
 

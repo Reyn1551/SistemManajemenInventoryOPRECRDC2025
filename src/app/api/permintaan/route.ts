@@ -1,11 +1,31 @@
 import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/db";
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    const url = new URL(req.url);
+    const take = Number(url.searchParams.get('take')) || 20;
+    const skip = Number(url.searchParams.get('skip')) || 0;
     const permintaan = await db.permintaan.findMany({
-      orderBy: {
-        createdAt: "desc",
+      orderBy: { createdAt: "desc" },
+      take,
+      skip,
+      select: {
+        id: true,
+        timestamp: true,
+        namaDivisi: true,
+        namaBarang: true,
+        jumlahDiminta: true,
+        hargaSatuan: true,
+        totalHarga: true,
+        prioritas: true,
+        kebutuhanKhusus: true,
+        diperlukanPada: true,
+        statusPermintaan: true,
+        totalBiayaAktual: true,
+        catatanPerlengkapan: true,
+        createdAt: true,
+        updatedAt: true,
       },
     });
 

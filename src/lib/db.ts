@@ -1,21 +1,21 @@
 import { PrismaClient } from "@prisma/client";
 
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined;
-};
-
-const prismaClientSingleton = () => {
-  return new PrismaClient({
-    log: ["query"],
-  });
-};
-
 declare global {
-  var prisma: undefined | ReturnType<typeof prismaClientSingleton>;
+  // eslint-disable-next-line no-var
+  var __prisma: PrismaClient | undefined;
 }
 
-const db = globalThis.prisma ?? prismaClientSingleton();
+const prisma = globalThis.__prisma ?? new PrismaClient({
+  log: process.env.NODE_ENV === "development" ? ["query", "error", "info"] : [],
+});
 
-export default db;
+if (process.env.NODE_ENV !== "production") {
+  globalThis.__prisma = prisma;
+  //Manasin Database loh ya wkwkwk
+  prisma
+    .$connect()
+    .then(() => console.log("[Prisma] connection warm‑up complete"))
+    .catch((e) => console.error("[Prisma] warm‑up error:", e));
+}
 
-if (process.env.NODE_ENV !== "production") globalThis.prisma = db;
+export default prisma;

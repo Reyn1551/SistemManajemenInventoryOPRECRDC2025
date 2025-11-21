@@ -1,11 +1,24 @@
 import db from "@/lib/db";
 import { NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    const url = new URL(req.url);
+    const take = Number(url.searchParams.get('take')) || 20;
+    const skip = Number(url.searchParams.get('skip')) || 0;
     const inventory = await db.inventory.findMany({
-      orderBy: {
-        createdAt: "desc",
+      orderBy: { createdAt: "desc" },
+      take,
+      skip,
+      select: {
+        id: true,
+        namaBarang: true,
+        kategori: true,
+        spesifikasi: true,
+        stokTersedia: true,
+        kondisi: true,
+        createdAt: true,
+        updatedAt: true,
       },
     });
     return NextResponse.json(inventory);
