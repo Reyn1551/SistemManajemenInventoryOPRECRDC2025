@@ -220,20 +220,21 @@ export default function Home() {
 
   //state untuk dialog rincian
   const [isRincianDetailOpen, setIsRincianDetailOpen] = useState(false);
-  const [selectedRincianItem, setSelectedRincianItem] =
-    useState<PermintaanItem | null>(null);
+  const [selectedRincianItem,
+    setSelectedRincianItem
+  ] = useState<PermintaanItem | null>(null);
 
   // State untuk autentikasi
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   // State for inventory editing
-  const [editingInventoryItem, setEditingInventoryItem] = useState<
-    string | null
-  >(null);
-  const [editInventoryForm, setEditInventoryForm] = useState<
-    Partial<InventoryItem>
-  >({});
+  const [editingInventoryItem, setEditingInventoryItem] = useState<string | null>(
+    null,
+  );
+  const [editInventoryForm,
+    setEditInventoryForm
+  ] = useState<Partial<InventoryItem>>({});
 
   // State untuk filter
   const [permintaanFilters, setPermintaanFilters] = useState({
@@ -249,9 +250,9 @@ export default function Home() {
   });
 
   // State untuk data yang sudah difilter
-  const [filteredPermintaan, setFilteredPermintaan] = useState<
-    PermintaanItem[]
-  >([]);
+  const [filteredPermintaan, setFilteredPermintaan] = useState<PermintaanItem[]>(
+    [],
+  );
   const [filteredInventory, setFilteredInventory] = useState<InventoryItem[]>(
     [],
   );
@@ -584,7 +585,7 @@ export default function Home() {
       if (val === null || val === undefined) return "";
       const str = String(val);
       // Jika string mengandung koma, bungkus dengan tanda kutip ganda
-      if (str.includes(",")) return `"${str.replace(/"/g, '""')}"`;
+      if (str.includes(',')) return `"${str.replace(/"/g, '""')}"`;
       return str;
     };
 
@@ -643,71 +644,70 @@ export default function Home() {
 
   // Jika berhasil diautentikasi, tampilkan konten aplikasi utama
   return (
-    <main className="flex min-h-screen flex-col items-center p-4 md:p-8 lg:p-12 bg-gray-50 dark:bg-gray-950">
+    <main className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <Toaster richColors position="top-center" />
-      <div className="max-w-7xl mx-auto p-4 md:p-6">
-        {/* Header */}
-        <div className="mb-8 text-center">
-          <div className="flex justify-center items-center gap-3 mb-4">
-            <div className="p-3 bg-slate-800 rounded-lg shadow-sm">
-              <Building className="w-8 h-8 text-white" />
+      {/* Header and TabsList - STICKY PART */}
+      <div className="sticky top-0 z-20 w-full border-b border-gray-200 bg-white/80 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto px-4">
+          {/* Header */}
+          <div className="py-4 text-center">
+            <div className="flex justify-center items-center gap-3 mb-2">
+              <div className="p-2 bg-slate-800 rounded-lg shadow-sm">
+                <Building className="w-6 h-6 text-white" />
+              </div>
+              <h1 className="text-2xl md:text-3xl font-bold text-slate-800">
+                Sistem Inventory Management
+              </h1>
             </div>
-            {/* <div className="p-2 bg-slate-800 rounded-lg shadow-sm flex items-center justify-center">
-              <Image
-                src="/logo-rdc.svg" // Sesuaikan nama file ini dengan nama file logo Anda
-                alt="Logo RDC"
-                width={40} // Ukuran lebar (w-10)
-                height={40} // Ukuran tinggi (h-10)
-              />
-            </div> */}
-            <h1 className="text-4xl md:text-5xl font-bold text-slate-800">
-              Sistem Inventory Management
-            </h1>
+            <p className="text-gray-500 text-sm md:text-base">
+              Open Recruitment Robotic Development Community 2025
+            </p>
           </div>
-          <p className="text-gray-600 text-lg">
-            Open Recruitment Robotic Development Community 2025
-          </p>
-        </div>
 
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <div className="w-full overflow-x-auto pb-2 md:flex md:justify-center">
+              <TabsList className="inline-flex h-auto items-center justify-center rounded-lg bg-gray-100 p-1">
+                <TabsTrigger
+                  value="dashboard"
+                  className="data-[state=active]:bg-slate-700 data-[state=active]:text-white transition-colors whitespace-nowrap px-4 py-2 text-sm font-medium"
+                >
+                  <BarChart3 className="w-4 h-4 mr-2" />
+                  Dashboard
+                </TabsTrigger>
+                <TabsTrigger
+                  value="inventory"
+                  className="data-[state=active]:bg-slate-700 data-[state=active]:text-white transition-colors whitespace-nowrap px-4 py-2 text-sm font-medium"
+                >
+                  <Package className="w-4 h-4 mr-2" />
+                  Inventory
+                </TabsTrigger>
+                <TabsTrigger
+                  value="permintaan"
+                  className="data-[state=active]:bg-slate-700 data-[state=active]:text-white transition-colors whitespace-nowrap px-4 py-2 text-sm font-medium"
+                >
+                  <Users className="w-4 h-4 mr-2" />
+                  Permintaan
+                </TabsTrigger>
+                <TabsTrigger
+                  value="rincian"
+                  className="data-[state=active]:bg-slate-700 data-[state=active]:text-white transition-colors whitespace-nowrap px-4 py-2 text-sm font-medium"
+                >
+                  <Eye className="w-4 h-4 mr-2" />
+                  Rincian
+                </TabsTrigger>
+              </TabsList>
+            </div>
+          </Tabs>
+        </div>
+      </div>
+
+      {/* Content - SCROLLABLE PART */}
+      <div className="max-w-7xl mx-auto p-4 md:p-6 w-full flex-grow">
         <Tabs
           value={activeTab}
           onValueChange={setActiveTab}
           className="space-y-6"
         >
-          {/* Wrapper untuk scrolling horizontal di mobile */}
-          <div className="w-full overflow-x-auto pb-2 md:flex md:justify-center">
-            <TabsList className="inline-flex h-auto items-center justify-center rounded-lg bg-white p-1 shadow-sm border border-gray-200">
-              <TabsTrigger
-                value="dashboard"
-                className="data-[state=active]:bg-slate-700 data-[state=active]:text-white transition-colors whitespace-nowrap"
-              >
-                <BarChart3 className="w-4 h-4 mr-2" />
-                Dashboard
-              </TabsTrigger>
-              <TabsTrigger
-                value="inventory"
-                className="data-[state=active]:bg-slate-700 data-[state=active]:text-white transition-colors whitespace-nowrap"
-              >
-                <Package className="w-4 h-4 mr-2" />
-                Inventory
-              </TabsTrigger>
-              <TabsTrigger
-                value="permintaan"
-                className="data-[state=active]:bg-slate-700 data-[state=active]:text-white transition-colors whitespace-nowrap"
-              >
-                <Users className="w-4 h-4 mr-2" />
-                Permintaan
-              </TabsTrigger>
-              <TabsTrigger
-                value="rincian"
-                className="data-[state=active]:bg-slate-700 data-[state=active]:text-white transition-colors whitespace-nowrap"
-              >
-                <Eye className="w-4 h-4 mr-2" />
-                Rincian
-              </TabsTrigger>
-            </TabsList>
-          </div>
-
           {/* Dashboard Tab */}
           <TabsContent value="dashboard" className="space-y-6">
             {/* Summary Cards */}
@@ -783,7 +783,9 @@ export default function Home() {
                     ([status, count]) => (
                       <div key={status} className="text-center">
                         <div
-                          className={`inline-flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium ${getStatusColor(status)}`}
+                          className={`inline-flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium ${getStatusColor(
+                            status,
+                          )}`}
                         >
                           {getStatusIcon(status)}
                           {status}
@@ -801,7 +803,7 @@ export default function Home() {
 
           {/* Inventory Tab */}
           <TabsContent value="inventory" className="space-y-6">
-            <div className="flex justify-between items-center">
+            <div className="flex flex-wrap gap-4 justify-between items-center">
               <h2 className="text-3xl font-bold text-slate-800">
                 Data Master Inventory
               </h2>
@@ -933,7 +935,7 @@ export default function Home() {
 
             {/* Filter Section */}
             <div className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
-              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              <div className="flex flex-wrap items-center gap-4">
                 <Input
                   placeholder="Cari nama barang..."
                   value={inventoryFilters.search}
@@ -943,6 +945,7 @@ export default function Home() {
                       search: e.target.value,
                     })
                   }
+                  className="flex-grow min-w-[200px]"
                 />
                 <Input
                   placeholder="Cari kategori..."
@@ -953,6 +956,7 @@ export default function Home() {
                       kategori: e.target.value,
                     })
                   }
+                  className="flex-grow min-w-[200px]"
                 />
                 <Select
                   value={inventoryFilters.kondisi}
@@ -960,7 +964,7 @@ export default function Home() {
                     setInventoryFilters({ ...inventoryFilters, kondisi: value })
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="flex-grow min-w-[200px]">
                     <SelectValue placeholder="Filter Kondisi" />
                   </SelectTrigger>
                   <SelectContent>
@@ -981,7 +985,6 @@ export default function Home() {
                       search: "",
                     })
                   }
-                  className="col-span-1 lg:col-start-5"
                 >
                   <FilterX className="w-4 h-4 mr-2" />
                   Reset Filter
@@ -991,10 +994,10 @@ export default function Home() {
 
             <Card className="bg-white shadow-sm border border-gray-200">
               <CardContent className="p-0">
-                <div className="max-h-96 overflow-y-auto">
+                <div className="overflow-x-auto">
                   <Table>
-                    <TableHeader>
-                      <TableRow className="bg-gray-50">
+                    <TableHeader className="bg-gray-50">
+                      <TableRow>
                         <TableHead className="font-semibold">
                           Nama Barang
                         </TableHead>
@@ -1169,7 +1172,7 @@ export default function Home() {
 
           {/* Permintaan Tab */}
           <TabsContent value="permintaan" className="space-y-6">
-            <div className="flex justify-between items-center">
+            <div className="flex flex-wrap gap-4 justify-between items-center">
               <h2 className="text-3xl font-bold text-slate-800">
                 Form Input Permintaan
               </h2>
@@ -1192,7 +1195,7 @@ export default function Home() {
                       Isi form permintaan barang baru
                     </DialogDescription>
                   </DialogHeader>
-                  <div className="grid gap-4 py-4 max-h-96 overflow-y-auto">
+                  <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto pr-4">
                     <div className="grid grid-cols-4 items-center gap-4">
                       <Label htmlFor="namaDivisi" className="text-right">
                         Divisi
@@ -1214,7 +1217,11 @@ export default function Home() {
                             <SelectItem key={divisi} value={divisi}>
                               <div className="flex items-center gap-2">
                                 <div
-                                  className={`w-3 h-3 rounded-full ${divisiColors[divisi as keyof typeof divisiColors].bg}`}
+                                  className={`w-3 h-3 rounded-full ${
+                                    divisiColors[
+                                      divisi as keyof typeof divisiColors
+                                    ].bg
+                                  }`}
                                 ></div>
                                 {divisi}
                               </div>
@@ -1410,10 +1417,10 @@ export default function Home() {
 
             <Card className="bg-white shadow-sm border border-gray-200">
               <CardContent className="p-0">
-                <div className="max-h-96 overflow-y-auto">
+                <div className="overflow-x-auto">
                   <Table>
-                    <TableHeader>
-                      <TableRow className="bg-gray-50">
+                    <TableHeader className="bg-gray-50">
+                      <TableRow>
                         <TableHead className="font-semibold">
                           Timestamp
                         </TableHead>
@@ -1438,7 +1445,11 @@ export default function Home() {
                       {filteredPermintaan.map((item) => (
                         <TableRow
                           key={item.id}
-                          className={`hover:bg-gray-50 ${divisiColors[item.namaDivisi as keyof typeof divisiColors].hover}`}
+                          className={`hover:bg-gray-50 ${ 
+                            divisiColors[
+                              item.namaDivisi as keyof typeof divisiColors
+                            ].hover
+                          }`}
                         >
                           <TableCell className="font-medium">
                             {new Date(item.timestamp).toLocaleDateString(
@@ -1447,7 +1458,11 @@ export default function Home() {
                           </TableCell>
                           <TableCell>
                             <Badge
-                              className={`${divisiColors[item.namaDivisi as keyof typeof divisiColors].bg} text-white`}
+                              className={`${ 
+                                divisiColors[
+                                  item.namaDivisi as keyof typeof divisiColors
+                                ].bg
+                              } text-white`}
                             >
                               {item.namaDivisi}
                             </Badge>
@@ -1541,7 +1556,9 @@ export default function Home() {
                                 className="w-full"
                               />
                             ) : item.totalBiayaAktual ? (
-                              `Rp ${item.totalBiayaAktual.toLocaleString("id-ID")}`
+                              `Rp ${item.totalBiayaAktual.toLocaleString(
+                                "id-ID",
+                              )}`
                             ) : (
                               "-"
                             )}
@@ -1666,9 +1683,9 @@ export default function Home() {
               Rincian Kebutuhan Per Divisi
             </h2>
 
-            {/* Filter Section - DIPINDAHKAN KE SINI */}
+            {/* Filter Section - More Responsive */}
             <div className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
-              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              <div className="flex flex-wrap items-center gap-2">
                 <Input
                   placeholder="Cari nama barang..."
                   value={permintaanFilters.search}
@@ -1678,7 +1695,9 @@ export default function Home() {
                       search: e.target.value,
                     })
                   }
+                  className="flex-1 basis-full sm:basis-1/4"
                 />
+
                 <Select
                   value={permintaanFilters.divisi}
                   onValueChange={(value) =>
@@ -1688,7 +1707,7 @@ export default function Home() {
                     })
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="flex-1 basis-full sm:basis-1/5">
                     <SelectValue placeholder="Filter Divisi" />
                   </SelectTrigger>
                   <SelectContent>
@@ -1700,6 +1719,7 @@ export default function Home() {
                     ))}
                   </SelectContent>
                 </Select>
+
                 <Select
                   value={permintaanFilters.prioritas}
                   onValueChange={(value) =>
@@ -1709,7 +1729,7 @@ export default function Home() {
                     })
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="flex-1 basis-full sm:basis-1/5">
                     <SelectValue placeholder="Filter Prioritas" />
                   </SelectTrigger>
                   <SelectContent>
@@ -1721,6 +1741,7 @@ export default function Home() {
                     ))}
                   </SelectContent>
                 </Select>
+
                 <Select
                   value={permintaanFilters.status}
                   onValueChange={(value) =>
@@ -1730,7 +1751,7 @@ export default function Home() {
                     })
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="flex-1 basis-full sm:basis-1/5">
                     <SelectValue placeholder="Filter Status" />
                   </SelectTrigger>
                   <SelectContent>
@@ -1742,7 +1763,7 @@ export default function Home() {
                     ))}
                   </SelectContent>
                 </Select>
-                <div className="flex gap-2 col-span-1 md:col-span-2 lg:col-span-1">
+                <div className="flex-1 basis-full sm:basis-auto flex gap-2">
                   <Button
                     variant="outline"
                     onClick={() =>
@@ -1753,14 +1774,15 @@ export default function Home() {
                         search: "",
                       })
                     }
-                    className="w-full"
+                    className="flex-1"
                   >
                     <FilterX className="w-4 h-4 mr-2" />
                     Reset
                   </Button>
+
                   <Button
                     onClick={handleExportToCSV}
-                    className="w-full bg-emerald-700 hover:bg-emerald-800"
+                    className="flex-1 bg-emerald-700 hover:bg-emerald-800"
                   >
                     <FileDown className="w-4 h-4 mr-2" />
                     Ekspor
@@ -1908,8 +1930,8 @@ export default function Home() {
                 Rincian lengkap untuk item{" "}
                 <span className="font-semibold text-slate-700">
                   {selectedRincianItem?.namaBarang}
-                </span>{" "}
-                dari Divisi {selectedRincianItem?.namaDivisi}.
+                </span>
+                {" "}dari Divisi {selectedRincianItem?.namaDivisi}.
               </DialogDescription>
             </DialogHeader>
             {selectedRincianItem && (
