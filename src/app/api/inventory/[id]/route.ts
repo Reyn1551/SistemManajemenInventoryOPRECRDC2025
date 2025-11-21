@@ -3,11 +3,12 @@ import { NextResponse } from "next/server";
 
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id } = await params;
     const item = await db.inventory.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
     return NextResponse.json(item);
   } catch (error) {
@@ -18,12 +19,13 @@ export async function GET(
 
 export async function PUT(
   req: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id } = await params;
     const body = await req.json();
     const updatedItem = await db.inventory.update({
-      where: { id: params.id },
+      where: { id },
       data: body,
     });
     return NextResponse.json(updatedItem);
@@ -35,11 +37,12 @@ export async function PUT(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id } = await params;
     await db.inventory.delete({
-      where: { id: params.id },
+      where: { id },
     });
     return new NextResponse(null, { status: 204 }); // 204 No Content
   } catch (error) {

@@ -19,6 +19,7 @@ import { PermintaanTable } from "@/components/permintaan/PermintaanTable";
 import { PermintaanFilters } from "@/components/permintaan/PermintaanFilters";
 import { AddPermintaanDialog } from "@/components/permintaan/AddPermintaanDialog";
 import { PermintaanDetailDialog } from "@/components/permintaan/PermintaanDetailDialog";
+import { ModeToggle } from "@/components/mode-toggle";
 
 // Types
 interface InventoryItem {
@@ -553,53 +554,56 @@ export default function Home() {
 
   // Jika berhasil diautentikasi, tampilkan konten aplikasi utama
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-gray-950">
+    <main className="min-h-screen bg-gray-50 dark:bg-slate-950">
       <Toaster richColors position="top-center" />
       {/* Header and TabsList - STICKY PART */}
-      <div className="sticky top-0 z-20 w-full border-b border-gray-200 bg-white/80 backdrop-blur-md">
+      <div className="sticky top-0 z-20 w-full border-b border-gray-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-4">
           {/* Header */}
-          <div className="py-4 text-center">
+          <div className="py-4 text-center relative">
+            <div className="absolute right-0 top-4">
+              <ModeToggle />
+            </div>
             <div className="flex justify-center items-center gap-3 mb-2">
-              <div className="p-2 bg-slate-800 rounded-lg shadow-sm">
+              <div className="p-2 bg-slate-800 dark:bg-slate-700 rounded-lg shadow-sm">
                 <Building className="w-6 h-6 text-white" />
               </div>
-              <h1 className="text-2xl md:text-3xl font-bold text-slate-800">
+              <h1 className="text-2xl md:text-3xl font-bold text-slate-800 dark:text-white">
                 Sistem Inventory Management
               </h1>
             </div>
-            <p className="text-gray-500 text-sm md:text-base">
+            <p className="text-gray-500 dark:text-slate-400 text-sm md:text-base">
               Open Recruitment Robotic Development Community 2025
             </p>
           </div>
 
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <div className="w-full overflow-x-auto pb-2 md:flex md:justify-center">
-              <TabsList className="inline-flex h-auto items-center justify-center rounded-lg bg-gray-100 p-1">
+              <TabsList className="inline-flex h-auto items-center justify-center rounded-lg bg-gray-100 dark:bg-slate-800 p-1">
                 <TabsTrigger
                   value="dashboard"
-                  className="data-[state=active]:bg-slate-700 data-[state=active]:text-white transition-colors whitespace-nowrap px-4 py-2 text-sm font-medium"
+                  className="data-[state=active]:bg-slate-700 data-[state=active]:text-white dark:data-[state=active]:bg-slate-600 transition-colors whitespace-nowrap px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
                 >
                   <BarChart3 className="w-4 h-4 mr-2" />
                   Dashboard
                 </TabsTrigger>
                 <TabsTrigger
                   value="inventory"
-                  className="data-[state=active]:bg-slate-700 data-[state=active]:text-white transition-colors whitespace-nowrap px-4 py-2 text-sm font-medium"
+                  className="data-[state=active]:bg-slate-700 data-[state=active]:text-white dark:data-[state=active]:bg-slate-600 transition-colors whitespace-nowrap px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
                 >
                   <Package className="w-4 h-4 mr-2" />
                   Inventory
                 </TabsTrigger>
                 <TabsTrigger
                   value="permintaan"
-                  className="data-[state=active]:bg-slate-700 data-[state=active]:text-white transition-colors whitespace-nowrap px-4 py-2 text-sm font-medium"
+                  className="data-[state=active]:bg-slate-700 data-[state=active]:text-white dark:data-[state=active]:bg-slate-600 transition-colors whitespace-nowrap px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
                 >
                   <Users className="w-4 h-4 mr-2" />
                   Permintaan
                 </TabsTrigger>
                 <TabsTrigger
                   value="rincian"
-                  className="data-[state=active]:bg-slate-700 data-[state=active]:text-white transition-colors whitespace-nowrap px-4 py-2 text-sm font-medium"
+                  className="data-[state=active]:bg-slate-700 data-[state=active]:text-white dark:data-[state=active]:bg-slate-600 transition-colors whitespace-nowrap px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
                 >
                   <Eye className="w-4 h-4 mr-2" />
                   Rincian
@@ -661,7 +665,6 @@ export default function Home() {
                 inventory={filteredInventory}
                 editingId={editingInventoryItem}
                 editForm={editInventoryForm}
-                kondisiOptions={kondisiOptions}
                 onEdit={handleEditInventory}
                 onDelete={handleDeleteInventory}
                 onSave={handleSaveInventoryEdit}
@@ -694,24 +697,7 @@ export default function Home() {
               />
             </div>
 
-            <PermintaanFilters
-              filters={permintaanFilters}
-              divisiOptions={divisiOptions}
-              prioritasOptions={prioritasOptions}
-              statusOptions={statusOptions}
-              onFilterChange={(key, value) =>
-                setPermintaanFilters({ ...permintaanFilters, [key]: value })
-              }
-              onReset={() =>
-                setPermintaanFilters({
-                  divisi: "Semua",
-                  prioritas: "Semua",
-                  status: "Semua",
-                  search: "",
-                })
-              }
-              onExport={handleExportToCSV}
-            />
+
 
             <div className="bg-white shadow-sm border border-gray-200 rounded-lg p-0">
               <PermintaanTable
@@ -777,19 +763,19 @@ export default function Home() {
                 return divisiPermintaan.length > 0 ? (
                   <div
                     key={divisi}
-                    className="bg-white shadow-sm border border-gray-200 rounded-lg overflow-hidden"
+                    className="bg-white dark:bg-slate-800/50 shadow-sm border border-gray-200 dark:border-slate-700 rounded-lg overflow-hidden"
                   >
                     <div
-                      className={`${colors.light} ${colors.border} border-l-4 p-4 flex items-center justify-between`}
+                      className={`${colors.light} dark:bg-slate-800 ${colors.border} dark:border-slate-700 border-l-4 p-4 flex items-center justify-between`}
                     >
                       <div>
-                        <h3 className="text-lg font-bold flex items-center gap-3 text-slate-800">
+                        <h3 className="text-lg font-bold flex items-center gap-3 text-slate-800 dark:text-slate-100">
                           <div
                             className={`w-4 h-4 rounded-full ${colors.bg}`}
                           ></div>
                           Kebutuhan Divisi {divisi}
                         </h3>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-gray-500 dark:text-slate-400">
                           Total {divisiPermintaan.length} permintaan
                         </p>
                       </div>

@@ -3,9 +3,10 @@ import { NextResponse } from "next/server";
 
 export async function PUT(
   req: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const { id } = await params;
     const body = await req.json();
 
     // Ambil semua data dari body, termasuk totalBiayaAktual
@@ -20,7 +21,7 @@ export async function PUT(
     } = body;
 
     const updatedPermintaan = await db.permintaan.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         namaBarang,
         jumlahDiminta,
@@ -40,10 +41,11 @@ export async function PUT(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    await db.permintaan.delete({ where: { id: params.id } });
+    const { id } = await params;
+    await db.permintaan.delete({ where: { id } });
     return new NextResponse(null, { status: 204 });
   } catch (error) {
     console.error("[PERMINTAAN_DELETE_ERROR]", error);

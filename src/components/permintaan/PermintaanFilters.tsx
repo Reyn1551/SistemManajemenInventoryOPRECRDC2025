@@ -34,7 +34,7 @@ export function PermintaanFilters({
     onExport,
 }: PermintaanFiltersProps) {
     return (
-        <div className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
+        <div className="p-4 bg-white dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 rounded-lg shadow-sm">
             <div className="flex flex-wrap items-center gap-2">
                 <Input
                     placeholder="Cari nama barang..."

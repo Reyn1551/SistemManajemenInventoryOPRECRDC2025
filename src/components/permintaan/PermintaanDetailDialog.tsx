@@ -89,14 +89,14 @@ export function PermintaanDetailDialog({
 }: PermintaanDetailDialogProps) {
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-lg bg-white">
+            <DialogContent className="sm:max-w-lg bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
                 <DialogHeader>
-                    <DialogTitle className="text-2xl font-bold text-slate-800">
+                    <DialogTitle className="text-2xl font-bold text-slate-800 dark:text-slate-100">
                         Detail Permintaan Barang
                     </DialogTitle>
-                    <DialogDescription>
+                    <DialogDescription className="text-slate-500 dark:text-slate-400">
                         Rincian lengkap untuk item{" "}
-                        <span className="font-semibold text-slate-700">
+                        <span className="font-semibold text-slate-700 dark:text-slate-300">
                             {item?.namaBarang}
                         </span>{" "}
                         dari Divisi {item?.namaDivisi}.
@@ -104,36 +104,36 @@ export function PermintaanDetailDialog({
                 </DialogHeader>
                 {item && (
                     <div className="mt-4 space-y-4 max-h-[70vh] overflow-y-auto pr-2">
-                        <div className="grid grid-cols-3 gap-x-4 gap-y-2 p-3 rounded-lg border bg-gray-50">
-                            <div className="col-span-1 text-sm font-medium text-gray-500">
+                        <div className="grid grid-cols-3 gap-x-4 gap-y-2 p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-gray-50 dark:bg-slate-800/50">
+                            <div className="col-span-1 text-sm font-medium text-gray-500 dark:text-slate-400">
                                 Nama Barang
                             </div>
-                            <div className="col-span-2 font-semibold text-slate-800">
+                            <div className="col-span-2 font-semibold text-slate-800 dark:text-slate-200">
                                 {item.namaBarang}
                             </div>
 
-                            <div className="col-span-1 text-sm font-medium text-gray-500">
+                            <div className="col-span-1 text-sm font-medium text-gray-500 dark:text-slate-400">
                                 Divisi
                             </div>
                             <div className="col-span-2">
                                 <Badge
                                     className={`${divisiColors[item.namaDivisi as keyof typeof divisiColors]?.bg
-                                        } text-white`}
+                                        } text-white border-0`}
                                 >
                                     {item.namaDivisi}
                                 </Badge>
                             </div>
 
-                            <div className="col-span-1 text-sm font-medium text-gray-500">
+                            <div className="col-span-1 text-sm font-medium text-gray-500 dark:text-slate-400">
                                 Jumlah
                             </div>
-                            <div className="col-span-2 font-semibold text-slate-800">
+                            <div className="col-span-2 font-semibold text-slate-800 dark:text-slate-200">
                                 {item.jumlahDiminta} unit
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-3 gap-x-4 gap-y-2 p-3 rounded-lg border">
-                            <div className="col-span-1 text-sm font-medium text-gray-500">
+                        <div className="grid grid-cols-3 gap-x-4 gap-y-2 p-3 rounded-lg border border-slate-200 dark:border-slate-800">
+                            <div className="col-span-1 text-sm font-medium text-gray-500 dark:text-slate-400">
                                 Prioritas
                             </div>
                             <div className="col-span-2">
@@ -142,7 +142,7 @@ export function PermintaanDetailDialog({
                                 </Badge>
                             </div>
 
-                            <div className="col-span-1 text-sm font-medium text-gray-500">
+                            <div className="col-span-1 text-sm font-medium text-gray-500 dark:text-slate-400">
                                 Status
                             </div>
                             <div className="col-span-2">
@@ -153,46 +153,46 @@ export function PermintaanDetailDialog({
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-3 gap-x-4 gap-y-2 p-3 rounded-lg border bg-gray-50">
-                            <div className="col-span-1 text-sm font-medium text-gray-500">
+                        <div className="grid grid-cols-3 gap-x-4 gap-y-2 p-3 rounded-lg border border-slate-200 dark:border-slate-800 bg-gray-50 dark:bg-slate-800/50">
+                            <div className="col-span-1 text-sm font-medium text-gray-500 dark:text-slate-400">
                                 Estimasi Harga
                             </div>
-                            <div className="col-span-2 font-semibold text-slate-800">
+                            <div className="col-span-2 font-semibold text-slate-800 dark:text-slate-200">
                                 {item.totalHarga
                                     ? `Rp ${item.totalHarga.toLocaleString("id-ID")}`
                                     : "-"}
                             </div>
 
-                            <div className="col-span-1 text-sm font-medium text-gray-500">
+                            <div className="col-span-1 text-sm font-medium text-gray-500 dark:text-slate-400">
                                 Biaya Aktual
                             </div>
-                            <div className="col-span-2 font-semibold text-emerald-600">
+                            <div className="col-span-2 font-semibold text-emerald-600 dark:text-emerald-400">
                                 {item.totalBiayaAktual
                                     ? `Rp ${item.totalBiayaAktual.toLocaleString("id-ID")}`
                                     : "Belum diisi"}
                             </div>
                         </div>
 
-                        <div className="space-y-3 p-3 rounded-lg border">
+                        <div className="space-y-3 p-3 rounded-lg border border-slate-200 dark:border-slate-800">
                             <div>
-                                <Label className="text-sm font-medium text-gray-500">
+                                <Label className="text-sm font-medium text-gray-500 dark:text-slate-400">
                                     Kebutuhan Khusus
                                 </Label>
-                                <p className="text-sm text-slate-700 mt-1 p-2 bg-gray-50 rounded-md min-h-[40px]">
+                                <p className="text-sm text-slate-700 dark:text-slate-300 mt-1 p-2 bg-gray-50 dark:bg-slate-800/50 rounded-md min-h-[40px]">
                                     {item.kebutuhanKhusus || "-"}
                                 </p>
                             </div>
                             <div>
-                                <Label className="text-sm font-medium text-gray-500">
+                                <Label className="text-sm font-medium text-gray-500 dark:text-slate-400">
                                     Catatan dari Perlengkapan
                                 </Label>
-                                <p className="text-sm text-slate-700 mt-1 p-2 bg-gray-50 rounded-md min-h-[40px]">
+                                <p className="text-sm text-slate-700 dark:text-slate-300 mt-1 p-2 bg-gray-50 dark:bg-slate-800/50 rounded-md min-h-[40px]">
                                     {item.catatanPerlengkapan || "-"}
                                 </p>
                             </div>
                         </div>
 
-                        <div className="text-xs text-center text-gray-400 pt-2">
+                        <div className="text-xs text-center text-gray-400 dark:text-slate-500 pt-2">
                             Diajukan pada:{" "}
                             {new Date(item.timestamp).toLocaleString("id-ID", {
                                 dateStyle: "full",

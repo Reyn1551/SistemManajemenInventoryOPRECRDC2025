@@ -51,51 +51,51 @@ export function AddInventoryDialog({
                     Tambah Item
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px] bg-white">
+            <DialogContent className="sm:max-w-[425px] bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
                 <DialogHeader>
-                    <DialogTitle className="text-slate-800">
+                    <DialogTitle className="text-slate-800 dark:text-slate-100">
                         Tambah Item Inventory
                     </DialogTitle>
-                    <DialogDescription>
+                    <DialogDescription className="text-slate-500 dark:text-slate-400">
                         Tambahkan item baru ke database inventory
                     </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
                     <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="namaBarang" className="text-right">
+                        <Label htmlFor="namaBarang" className="text-right dark:text-slate-300">
                             Nama Barang
                         </Label>
                         <Input
                             id="namaBarang"
                             value={newItem.namaBarang}
                             onChange={(e) => onFormChange("namaBarang", e.target.value)}
-                            className="col-span-3"
+                            className="col-span-3 bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800"
                         />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="kategori" className="text-right">
+                        <Label htmlFor="kategori" className="text-right dark:text-slate-300">
                             Kategori
                         </Label>
                         <Input
                             id="kategori"
                             value={newItem.kategori}
                             onChange={(e) => onFormChange("kategori", e.target.value)}
-                            className="col-span-3"
+                            className="col-span-3 bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800"
                         />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="spesifikasi" className="text-right">
+                        <Label htmlFor="spesifikasi" className="text-right dark:text-slate-300">
                             Spesifikasi
                         </Label>
                         <Input
                             id="spesifikasi"
                             value={newItem.spesifikasi}
                             onChange={(e) => onFormChange("spesifikasi", e.target.value)}
-                            className="col-span-3"
+                            className="col-span-3 bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800"
                         />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="stokTersedia" className="text-right">
+                        <Label htmlFor="stokTersedia" className="text-right dark:text-slate-300">
                             Stok
                         </Label>
                         <Input
@@ -105,18 +105,18 @@ export function AddInventoryDialog({
                             onChange={(e) =>
                                 onFormChange("stokTersedia", parseInt(e.target.value) || 0)
                             }
-                            className="col-span-3"
+                            className="col-span-3 bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800"
                         />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="kondisi" className="text-right">
+                        <Label htmlFor="kondisi" className="text-right dark:text-slate-300">
                             Kondisi
                         </Label>
                         <Select
                             value={newItem.kondisi}
                             onValueChange={(value) => onFormChange("kondisi", value)}
                         >
-                            <SelectTrigger className="col-span-3">
+                            <SelectTrigger className="col-span-3 bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800">
                                 <SelectValue placeholder="Pilih kondisi" />
                             </SelectTrigger>
                             <SelectContent>
@@ -130,7 +130,7 @@ export function AddInventoryDialog({
                     </div>
                 </div>
                 <div className="flex justify-end gap-2">
-                    <Button variant="outline" onClick={() => onOpenChange(false)}>
+                    <Button variant="outline" onClick={() => onOpenChange(false)} className="dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800">
                         Batal
                     </Button>
                     <Button

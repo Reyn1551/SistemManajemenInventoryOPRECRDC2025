@@ -11,8 +11,12 @@ import {
     AlertCircle,
     XCircle,
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 interface DashboardStats {
+    totalItemDiminta: number;
+    totalEstimasiBiaya: number;
+    totalBiayaAktual: number;
     statusCounts: {
         Diajukan: number;
         "Disetujui Perlengkapan": number;
@@ -26,66 +30,72 @@ interface StatusSummaryCardProps {
     stats: DashboardStats | null;
 }
 
-const getStatusColor = (status: string) => {
-    switch (status) {
-        case "Diajukan":
-            return "bg-blue-100 text-blue-800 border border-blue-200";
-        case "Disetujui Perlengkapan":
-            return "bg-indigo-100 text-indigo-800 border border-indigo-200";
-        case "Sedang Diproses":
-            return "bg-yellow-100 text-yellow-800 border border-yellow-200";
-        case "Selesai":
-            return "bg-green-100 text-green-800 border border-green-200";
-        case "Ditolak":
-            return "bg-red-100 text-red-800 border border-red-200";
-        default:
-            return "bg-gray-100 text-gray-800 border border-gray-200";
-    }
-};
-
-const getStatusIcon = (status: string) => {
-    switch (status) {
-        case "Diajukan":
-            return <Clock className="w-4 h-4" />;
-        case "Disetujui Perlengkapan":
-            return <CheckCircle className="w-4 h-4" />;
-        case "Sedang Diproses":
-            return <AlertCircle className="w-4 h-4" />;
-        case "Selesai":
-            return <CheckCircle className="w-4 h-4" />;
-        case "Ditolak":
-            return <XCircle className="w-4 h-4" />;
-        default:
-            return <Clock className="w-4 h-4" />;
-    }
-};
-
 export function StatusSummaryCard({ stats }: StatusSummaryCardProps) {
     return (
-        <Card className="bg-white shadow-sm border border-gray-200">
+        <Card className="bg-white dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 shadow-sm">
             <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                    <BarChart3 className="w-5 h-5 text-slate-600" />
+                <CardTitle className="flex items-center gap-2 text-lg font-semibold text-slate-800 dark:text-white">
+                    <BarChart3 className="w-5 h-5 text-slate-500 dark:text-slate-400" />
                     Ringkasan Status Permintaan
                 </CardTitle>
             </CardHeader>
             <CardContent>
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                    {Object.entries(stats?.statusCounts || {}).map(([status, count]) => (
-                        <div key={status} className="text-center">
-                            <div
-                                className={`inline-flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium ${getStatusColor(
-                                    status
-                                )}`}
-                            >
-                                {getStatusIcon(status)}
-                                {status}
-                            </div>
-                            <div className="text-2xl font-bold mt-2 text-slate-800">
-                                {count}
-                            </div>
-                        </div>
-                    ))}
+                    <div className="flex flex-col items-center p-3 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
+                        <Badge
+                            variant="secondary"
+                            className="mb-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-900/50"
+                        >
+                            <Clock className="w-3 h-3 mr-1" /> Diajukan
+                        </Badge>
+                        <span className="text-2xl font-bold text-slate-700 dark:text-slate-200">
+                            {stats?.statusCounts["Diajukan"] || 0}
+                        </span>
+                    </div>
+                    <div className="flex flex-col items-center p-3 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
+                        <Badge
+                            variant="secondary"
+                            className="mb-2 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-200 dark:hover:bg-indigo-900/50"
+                        >
+                            <CheckCircle className="w-3 h-3 mr-1" /> Disetujui Perlengkapan
+                        </Badge>
+                        <span className="text-2xl font-bold text-slate-700 dark:text-slate-200">
+                            {stats?.statusCounts["Disetujui Perlengkapan"] || 0}
+                        </span>
+                    </div>
+                    <div className="flex flex-col items-center p-3 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
+                        <Badge
+                            variant="secondary"
+                            className="mb-2 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 hover:bg-yellow-200 dark:hover:bg-yellow-900/50"
+                        >
+                            <AlertCircle className="w-3 h-3 mr-1" /> Sedang Diproses
+                        </Badge>
+                        <span className="text-2xl font-bold text-slate-700 dark:text-slate-200">
+                            {stats?.statusCounts["Sedang Diproses"] || 0}
+                        </span>
+                    </div>
+                    <div className="flex flex-col items-center p-3 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
+                        <Badge
+                            variant="secondary"
+                            className="mb-2 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 hover:bg-green-200 dark:hover:bg-green-900/50"
+                        >
+                            <CheckCircle className="w-3 h-3 mr-1" /> Selesai
+                        </Badge>
+                        <span className="text-2xl font-bold text-slate-700 dark:text-slate-200">
+                            {stats?.statusCounts["Selesai"] || 0}
+                        </span>
+                    </div>
+                    <div className="flex flex-col items-center p-3 rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700">
+                        <Badge
+                            variant="secondary"
+                            className="mb-2 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 hover:bg-red-200 dark:hover:bg-red-900/50"
+                        >
+                            <XCircle className="w-3 h-3 mr-1" /> Ditolak
+                        </Badge>
+                        <span className="text-2xl font-bold text-slate-700 dark:text-slate-200">
+                            {stats?.statusCounts["Ditolak"] || 0}
+                        </span>
+                    </div>
                 </div>
             </CardContent>
         </Card>

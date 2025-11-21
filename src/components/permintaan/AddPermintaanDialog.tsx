@@ -63,25 +63,25 @@ export function AddPermintaanDialog({
                     Tambah Permintaan
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[500px] bg-white">
+            <DialogContent className="sm:max-w-[500px] bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
                 <DialogHeader>
-                    <DialogTitle className="text-slate-800">
+                    <DialogTitle className="text-slate-800 dark:text-slate-100">
                         Tambah Permintaan Baru
                     </DialogTitle>
-                    <DialogDescription>
+                    <DialogDescription className="text-slate-500 dark:text-slate-400">
                         Isi form permintaan barang baru
                     </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4 py-4 max-h-[70vh] overflow-y-auto pr-4">
                     <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="namaDivisi" className="text-right">
+                        <Label htmlFor="namaDivisi" className="text-right dark:text-slate-300">
                             Divisi
                         </Label>
                         <Select
                             value={newItem.namaDivisi}
                             onValueChange={(value) => onFormChange("namaDivisi", value)}
                         >
-                            <SelectTrigger className="col-span-3">
+                            <SelectTrigger className="col-span-3 bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800">
                                 <SelectValue placeholder="Pilih divisi" />
                             </SelectTrigger>
                             <SelectContent>
@@ -100,18 +100,18 @@ export function AddPermintaanDialog({
                         </Select>
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="namaBarang" className="text-right">
+                        <Label htmlFor="namaBarang" className="text-right dark:text-slate-300">
                             Nama Barang
                         </Label>
                         <Input
                             id="namaBarang"
                             value={newItem.namaBarang}
                             onChange={(e) => onFormChange("namaBarang", e.target.value)}
-                            className="col-span-3"
+                            className="col-span-3 bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800"
                         />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="jumlahDiminta" className="text-right">
+                        <Label htmlFor="jumlahDiminta" className="text-right dark:text-slate-300">
                             Jumlah
                         </Label>
                         <Input
@@ -121,11 +121,11 @@ export function AddPermintaanDialog({
                             onChange={(e) =>
                                 onFormChange("jumlahDiminta", parseInt(e.target.value) || 0)
                             }
-                            className="col-span-3"
+                            className="col-span-3 bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800"
                         />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="hargaSatuan" className="text-right">
+                        <Label htmlFor="hargaSatuan" className="text-right dark:text-slate-300">
                             Harga Satuan
                         </Label>
                         <Input
@@ -135,11 +135,11 @@ export function AddPermintaanDialog({
                             onChange={(e) =>
                                 onFormChange("hargaSatuan", parseFloat(e.target.value) || 0)
                             }
-                            className="col-span-3"
+                            className="col-span-3 bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800"
                         />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="totalHarga" className="text-right">
+                        <Label htmlFor="totalHarga" className="text-right dark:text-slate-300">
                             Total Harga
                         </Label>
                         <Input
@@ -147,18 +147,18 @@ export function AddPermintaanDialog({
                             type="number"
                             value={newItem.totalHarga}
                             readOnly
-                            className="col-span-3 bg-gray-100"
+                            className="col-span-3 bg-gray-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400"
                         />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="prioritas" className="text-right">
+                        <Label htmlFor="prioritas" className="text-right dark:text-slate-300">
                             Prioritas
                         </Label>
                         <Select
                             value={newItem.prioritas}
                             onValueChange={(value) => onFormChange("prioritas", value)}
                         >
-                            <SelectTrigger className="col-span-3">
+                            <SelectTrigger className="col-span-3 bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800">
                                 <SelectValue placeholder="Pilih prioritas" />
                             </SelectTrigger>
                             <SelectContent>
@@ -171,19 +171,19 @@ export function AddPermintaanDialog({
                         </Select>
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="kebutuhanKhusus" className="text-right">
+                        <Label htmlFor="kebutuhanKhusus" className="text-right dark:text-slate-300">
                             Kebutuhan Khusus
                         </Label>
                         <Textarea
                             id="kebutuhanKhusus"
                             value={newItem.kebutuhanKhusus}
                             onChange={(e) => onFormChange("kebutuhanKhusus", e.target.value)}
-                            className="col-span-3"
+                            className="col-span-3 bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800"
                             rows={2}
                         />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="diperlukanPada" className="text-right">
+                        <Label htmlFor="diperlukanPada" className="text-right dark:text-slate-300">
                             Diperlukan Pada
                         </Label>
                         <Input
@@ -191,18 +191,18 @@ export function AddPermintaanDialog({
                             type="date"
                             value={newItem.diperlukanPada}
                             onChange={(e) => onFormChange("diperlukanPada", e.target.value)}
-                            className="col-span-3"
+                            className="col-span-3 bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800"
                         />
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="statusPermintaan" className="text-right">
+                        <Label htmlFor="statusPermintaan" className="text-right dark:text-slate-300">
                             Status
                         </Label>
                         <Select
                             value={newItem.statusPermintaan}
                             onValueChange={(value) => onFormChange("statusPermintaan", value)}
                         >
-                            <SelectTrigger className="col-span-3">
+                            <SelectTrigger className="col-span-3 bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800">
                                 <SelectValue placeholder="Pilih status" />
                             </SelectTrigger>
                             <SelectContent>
@@ -215,7 +215,7 @@ export function AddPermintaanDialog({
                         </Select>
                     </div>
                     <div className="grid grid-cols-4 items-center gap-4">
-                        <Label htmlFor="catatanPerlengkapan" className="text-right">
+                        <Label htmlFor="catatanPerlengkapan" className="text-right dark:text-slate-300">
                             Catatan
                         </Label>
                         <Textarea
@@ -224,13 +224,13 @@ export function AddPermintaanDialog({
                             onChange={(e) =>
                                 onFormChange("catatanPerlengkapan", e.target.value)
                             }
-                            className="col-span-3"
+                            className="col-span-3 bg-white dark:bg-slate-950 border-slate-200 dark:border-slate-800"
                             rows={2}
                         />
                     </div>
                 </div>
                 <div className="flex justify-end gap-2">
-                    <Button variant="outline" onClick={() => onOpenChange(false)}>
+                    <Button variant="outline" onClick={() => onOpenChange(false)} className="dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800">
                         Batal
                     </Button>
                     <Button
