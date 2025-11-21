@@ -47,6 +47,7 @@ interface PermintaanTableProps {
     onCancel: () => void;
     onFormChange: (field: keyof PermintaanItem, value: any) => void;
     onRincianClick: (item: PermintaanItem) => void;
+    isReadOnly?: boolean;
 }
 
 const getPriorityColor = (priority: string) => {
@@ -111,6 +112,7 @@ export function PermintaanTable({
     onCancel,
     onFormChange,
     onRincianClick,
+    isReadOnly = false,
 }: PermintaanTableProps) {
     return (
         <div className="overflow-x-auto">
@@ -126,7 +128,7 @@ export function PermintaanTable({
                         <TableHead className="font-semibold">Biaya Aktual</TableHead>
                         <TableHead className="font-semibold">Prioritas</TableHead>
                         <TableHead className="font-semibold">Status</TableHead>
-                        <TableHead className="font-semibold">Aksi</TableHead>
+                        {!isReadOnly && <TableHead className="font-semibold">Aksi</TableHead>}
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -134,7 +136,8 @@ export function PermintaanTable({
                         <TableRow
                             key={item.id}
                             className={`hover:bg-gray-50 ${divisiColors[item.namaDivisi as keyof typeof divisiColors]?.hover
-                                }`}
+                                } ${isReadOnly ? "cursor-pointer" : ""}`}
+                            onClick={() => isReadOnly && onRincianClick(item)}
                         >
                             <TableCell className="font-medium">
                                 {new Date(item.timestamp).toLocaleDateString("id-ID")}
@@ -273,42 +276,44 @@ export function PermintaanTable({
                                     </Badge>
                                 )}
                             </TableCell>
-                            <TableCell>
-                                <div className="flex gap-2">
-                                    {editingId === item.id ? (
-                                        <>
-                                            <Button
-                                                size="sm"
-                                                onClick={onSave}
-                                                className="bg-emerald-600 hover:bg-emerald-700"
-                                            >
-                                                <Save className="w-4 h-4" />
-                                            </Button>
-                                            <Button size="sm" variant="outline" onClick={onCancel}>
-                                                <X className="w-4 h-4" />
-                                            </Button>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <Button
-                                                size="sm"
-                                                variant="outline"
-                                                onClick={() => onEdit(item)}
-                                            >
-                                                <Edit2 className="w-4 h-4" />
-                                            </Button>
-                                            <Button
-                                                size="sm"
-                                                variant="outline"
-                                                onClick={() => onDelete(item.id)}
-                                                className="text-red-600 hover:text-red-700"
-                                            >
-                                                <Trash2 className="w-4 h-4" />
-                                            </Button>
-                                        </>
-                                    )}
-                                </div>
-                            </TableCell>
+                            {!isReadOnly && (
+                                <TableCell>
+                                    <div className="flex gap-2">
+                                        {editingId === item.id ? (
+                                            <>
+                                                <Button
+                                                    size="sm"
+                                                    onClick={(e) => { e.stopPropagation(); onSave(); }}
+                                                    className="bg-emerald-600 hover:bg-emerald-700"
+                                                >
+                                                    <Save className="w-4 h-4" />
+                                                </Button>
+                                                <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); onCancel(); }}>
+                                                    <X className="w-4 h-4" />
+                                                </Button>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Button
+                                                    size="sm"
+                                                    variant="outline"
+                                                    onClick={(e) => { e.stopPropagation(); onEdit(item); }}
+                                                >
+                                                    <Edit2 className="w-4 h-4" />
+                                                </Button>
+                                                <Button
+                                                    size="sm"
+                                                    variant="outline"
+                                                    onClick={(e) => { e.stopPropagation(); onDelete(item.id); }}
+                                                    className="text-red-600 hover:text-red-700"
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                </Button>
+                                            </>
+                                        )}
+                                    </div>
+                                </TableCell>
+                            )}
                         </TableRow>
                     ))}
                 </TableBody>

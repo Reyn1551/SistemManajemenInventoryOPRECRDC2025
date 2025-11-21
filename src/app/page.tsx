@@ -815,6 +815,7 @@ export default function Home() {
                           onCancel={() => { }} // No-op
                           onFormChange={() => { }} // No-op
                           onRincianClick={handleRincianClick}
+                          isReadOnly={true}
                         />
                       </div>
                     </div>
