@@ -24,6 +24,7 @@ import {
   X,
   Trash2,
   Eye,
+  FileDown,
   FilterX,
   Calendar,
   DollarSign,
@@ -478,6 +479,60 @@ export default function Home() {
     setSelectedRincianItem(item)
     setIsRincianDetailOpen(true)
   }
+
+  // Fungsi untuk mengekspor data ke CSV
+  const handleExportToCSV = () => {
+    if (filteredPermintaan.length === 0) {
+      toast.warning("Tidak ada data untuk diekspor.");
+      return;
+    }
+
+    // Definisikan header untuk file CSV
+    const headers = [
+      "ID", "Tanggal Diajukan", "Divisi", "Nama Barang", "Jumlah Diminta", 
+      "Estimasi Harga Satuan", "Total Estimasi Harga", "Biaya Aktual", 
+      "Prioritas", "Status", "Kebutuhan Khusus", "Catatan Perlengkapan"
+    ];
+
+    // Fungsi kecil untuk memastikan data dengan koma tidak merusak format CSV
+    const escapeCsv = (val: any) => {
+      if (val === null || val === undefined) return '';
+      const str = String(val);
+      // Jika string mengandung koma, bungkus dengan tanda kutip ganda
+      if (str.includes(',')) return `"${str.replace(/"/g, '""')}"`;
+      return str;
+    };
+
+    // Ubah setiap item permintaan menjadi baris CSV
+    const rows = filteredPermintaan.map(item => [
+      item.id,
+      new Date(item.timestamp).toLocaleDateString('id-ID'),
+      item.namaDivisi,
+      escapeCsv(item.namaBarang),
+      item.jumlahDiminta,
+      item.hargaSatuan || 0,
+      item.totalHarga || 0,
+      item.totalBiayaAktual || 0,
+      item.prioritas,
+      item.statusPermintaan,
+      escapeCsv(item.kebutuhanKhusus),
+      escapeCsv(item.catatanPerlengkapan)
+    ].join(','));
+
+    // Gabungkan header dan semua baris data
+    const csvContent = [headers.join(','), ...rows].join('\n');
+
+    // Buat Blob dan picu unduhan
+    const blob = new Blob([`\uFEFF${csvContent}`], { type: 'text/csv;charset=utf-8;' }); // \uFEFF untuk kompatibilitas Excel
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `laporan_permintaan_rdc_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success("Data berhasil diekspor!");
+  };
 
 
   // Fungsi yang akan dipanggil saat login berhasil
@@ -1153,7 +1208,7 @@ export default function Home() {
 
             {/* Filter Section - DIPINDAHKAN KE SINI */}
             <div className="p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
-              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
                 <Input 
                   placeholder="Cari nama barang..."
                   value={permintaanFilters.search}
@@ -1186,13 +1241,20 @@ export default function Home() {
                     {statusOptions.map(opt => <SelectItem key={opt} value={opt}>{opt}</SelectItem>)}
                   </SelectContent>
                 </Select>
-                <Button 
-                  variant="outline" 
-                  onClick={() => setPermintaanFilters({ divisi: 'Semua', prioritas: 'Semua', status: 'Semua', search: '' })}
-                >
-                  <FilterX className="w-4 h-4 mr-2" />
-                  Reset Filter
-                </Button>
+                <div className="flex gap-2 col-span-1 md:col-span-2 lg:col-span-1">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setPermintaanFilters({ divisi: 'Semua', prioritas: 'Semua', status: 'Semua', search: '' })}
+                    className="w-full"
+                  >
+                    <FilterX className="w-4 h-4 mr-2" />
+                    Reset
+                  </Button>
+                  <Button onClick={handleExportToCSV} className="w-full bg-emerald-700 hover:bg-emerald-800">
+                    <FileDown className="w-4 h-4 mr-2" />
+                    Ekspor
+                  </Button>
+                </div>
               </div>
             </div>
             
