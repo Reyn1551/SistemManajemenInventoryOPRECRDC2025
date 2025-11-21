@@ -455,7 +455,7 @@ export default function Home() {
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           {/* Wrapper untuk scrolling horizontal di mobile */}
-          <div className="w-full overflow-x-auto pb-2">
+          <div className="w-full overflow-x-auto pb-2 md:flex md:justify-center">
             <TabsList className="inline-flex h-auto items-center justify-center rounded-lg bg-white p-1 shadow-sm border border-gray-200">
               <TabsTrigger value="dashboard" className="data-[state=active]:bg-slate-700 data-[state=active]:text-white transition-colors whitespace-nowrap">
                 <BarChart3 className="w-4 h-4 mr-2" />
