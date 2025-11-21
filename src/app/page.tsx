@@ -31,6 +31,7 @@ import {
   Settings
 } from 'lucide-react'
 import LoginPage from '@/components/ui/LoginPage'
+import { Toaster, toast } from 'sonner'
 
 interface InventoryItem {
   id: string
@@ -199,29 +200,38 @@ export default function Home() {
 
   // Fetch data from API
   const fetchData = async () => {
+    // Mengambil data inventory secara terpisah
     try {
-      const [inventoryRes, permintaanRes, dashboardRes] = await Promise.all([
-        fetch('/api/inventory'),
-        fetch('/api/permintaan'),
-        fetch('/api/dashboard')
-      ])
-
+      const inventoryRes = await fetch('/api/inventory');
       if (inventoryRes.ok) {
-        const inventoryData = await inventoryRes.json()
-        setInventory(inventoryData)
-      }
-
-      if (permintaanRes.ok) {
-        const permintaanData = await permintaanRes.json()
-        setPermintaan(permintaanData)
-      }
-
-      if (dashboardRes.ok) {
-        const dashboardData = await dashboardRes.json()
-        setDashboardStats(dashboardData)
+        const inventoryData = await inventoryRes.json();
+        setInventory(inventoryData);
+      } else {
+        console.error('Failed to fetch inventory');
+        toast.error('Gagal memuat data inventory.');
       }
     } catch (error) {
-      console.error('Error fetching data:', error)
+      console.error('Error fetching inventory:', error);
+      toast.error('Terjadi kesalahan saat memuat data inventory.');
+    }
+    
+    // Mengambil data permintaan secara terpisah
+    try {
+      const permintaanRes = await fetch('/api/permintaan');
+      if (permintaanRes.ok) {
+        const permintaanData = await permintaanRes.json();
+        setPermintaan(permintaanData);
+      }
+    } catch (error) {
+      console.error('Error fetching permintaan:', error);
+    }
+
+    // Mengambil data dashboard secara terpisah
+    try {
+      const dashboardRes = await fetch('/api/dashboard');
+      if (dashboardRes.ok) setDashboardStats(await dashboardRes.json());
+    } catch (error) {
+      console.error('Error fetching dashboard stats:', error);
     }
   }
 
@@ -264,6 +274,7 @@ export default function Home() {
           kondisi: ''
         })
         fetchData()
+        toast.success('Item inventory berhasil ditambahkan!')
       }
     } catch (error) {
       console.error('Error adding inventory:', error)
@@ -295,8 +306,10 @@ export default function Home() {
           catatanPerlengkapan: ''
         })
         fetchData()
+        toast.success('Permintaan baru berhasil ditambahkan!')
       }
     } catch (error) {
+      toast.error('Gagal menambahkan permintaan baru.')
       console.error('Error adding permintaan:', error)
     }
   }
@@ -320,8 +333,10 @@ export default function Home() {
         setEditingItem(null)
         setEditForm({})
         fetchData()
+        toast.success('Perubahan berhasil disimpan!')
       }
     } catch (error) {
+      toast.error('Gagal menyimpan perubahan.')
       console.error('Error updating permintaan:', error)
     }
   }
@@ -335,8 +350,10 @@ export default function Home() {
 
         if (response.ok) {
           fetchData()
+          toast.success('Item permintaan berhasil dihapus.')
         }
       } catch (error) {
+        toast.error('Gagal menghapus item permintaan.')
         console.error('Error deleting permintaan:', error)
       }
     }
@@ -366,8 +383,10 @@ export default function Home() {
       if (response.ok) {
         handleCancelInventoryEdit()
         fetchData()
+        toast.success('Item inventory berhasil diperbarui!')
       }
     } catch (error) {
+      toast.error('Gagal memperbarui item inventory.')
       console.error('Error updating inventory:', error)
     }
   }
@@ -381,14 +400,15 @@ export default function Home() {
 
         if (response.ok) {
           fetchData()
+          toast.success('Item inventory berhasil dihapus.')
         } else {
           const errorData = await response.json()
           console.error('Failed to delete inventory:', errorData.error)
-          alert(`Gagal menghapus: ${errorData.error}`)
+          toast.error(`Gagal menghapus: ${errorData.error}`)
         }
       } catch (error) {
-        console.error('Error deleting inventory:', error)
-        alert('Terjadi kesalahan saat menghapus item.')
+        console.error('Error deleting inventory:', error)        
+        toast.error('Terjadi kesalahan saat menghapus item.')
       }
     }
   }
@@ -418,6 +438,7 @@ export default function Home() {
   // Jika berhasil diautentikasi, tampilkan konten aplikasi utama
   return (
     <main className="flex min-h-screen flex-col items-center p-4 md:p-8 lg:p-12 bg-gray-50 dark:bg-gray-950">
+      <Toaster richColors position="top-center" />
       <div className="max-w-7xl mx-auto p-4 md:p-6">
         {/* Header */}
         <div className="mb-8 text-center">
