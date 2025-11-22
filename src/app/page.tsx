@@ -19,6 +19,7 @@ import { PermintaanTable } from "@/components/permintaan/PermintaanTable";
 import { PermintaanFilters } from "@/components/permintaan/PermintaanFilters";
 import { AddPermintaanDialog } from "@/components/permintaan/AddPermintaanDialog";
 import { PermintaanDetailDialog } from "@/components/permintaan/PermintaanDetailDialog";
+import { EditPermintaanDialog } from "@/components/permintaan/EditPermintaanDialog";
 import { ModeToggle } from "@/components/mode-toggle";
 
 // Types
@@ -122,12 +123,13 @@ export default function Home() {
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [permintaan, setPermintaan] = useState<PermintaanItem[]>([]);
   const [dashboardStats, setDashboardStats] = useState<DashboardStats | null>(
-    null
+    null,
   );
   const [isAddInventoryOpen, setIsAddInventoryOpen] = useState(false);
   const [isAddPermintaanOpen, setIsAddPermintaanOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<PermintaanItem>>({});
+  const [isEditPermintaanOpen, setIsEditPermintaanOpen] = useState(false);
 
   //state untuk dialog rincian
   const [isRincianDetailOpen, setIsRincianDetailOpen] = useState(false);
@@ -164,7 +166,7 @@ export default function Home() {
     PermintaanItem[]
   >([]);
   const [filteredInventory, setFilteredInventory] = useState<InventoryItem[]>(
-    []
+    [],
   );
 
   // Form states
@@ -249,24 +251,24 @@ export default function Home() {
     let data = [...permintaan];
     if (permintaanFilters.divisi !== "Semua") {
       data = data.filter(
-        (item) => item.namaDivisi === permintaanFilters.divisi
+        (item) => item.namaDivisi === permintaanFilters.divisi,
       );
     }
     if (permintaanFilters.prioritas !== "Semua") {
       data = data.filter(
-        (item) => item.prioritas === permintaanFilters.prioritas
+        (item) => item.prioritas === permintaanFilters.prioritas,
       );
     }
     if (permintaanFilters.status !== "Semua") {
       data = data.filter(
-        (item) => item.statusPermintaan === permintaanFilters.status
+        (item) => item.statusPermintaan === permintaanFilters.status,
       );
     }
     if (permintaanFilters.search) {
       data = data.filter((item) =>
         item.namaBarang
           .toLowerCase()
-          .includes(permintaanFilters.search.toLowerCase())
+          .includes(permintaanFilters.search.toLowerCase()),
       );
     }
     setFilteredPermintaan(data);
@@ -279,7 +281,7 @@ export default function Home() {
       data = data.filter((item) =>
         item.kategori
           .toLowerCase()
-          .includes(inventoryFilters.kategori.toLowerCase())
+          .includes(inventoryFilters.kategori.toLowerCase()),
       );
     }
     if (inventoryFilters.kondisi !== "Semua") {
@@ -289,7 +291,7 @@ export default function Home() {
       data = data.filter((item) =>
         item.namaBarang
           .toLowerCase()
-          .includes(inventoryFilters.search.toLowerCase())
+          .includes(inventoryFilters.search.toLowerCase()),
       );
     }
     setFilteredInventory(data);
@@ -379,6 +381,7 @@ export default function Home() {
   const handleEdit = (item: PermintaanItem) => {
     setEditingItem(item.id);
     setEditForm(item);
+    setIsEditPermintaanOpen(true);
   };
 
   const handleSaveEdit = async () => {
@@ -394,8 +397,11 @@ export default function Home() {
       if (response.ok) {
         setEditingItem(null);
         setEditForm({});
+        setIsEditPermintaanOpen(false);
         fetchData();
         toast.success("Perubahan berhasil disimpan!");
+      } else {
+        toast.error("Gagal menyimpan perubahan.");
       }
     } catch (error) {
       toast.error("Gagal menyimpan perubahan.");
@@ -456,7 +462,7 @@ export default function Home() {
   const handleDeleteInventory = async (id: string) => {
     if (
       confirm(
-        "Apakah Anda yakin ingin menghapus item inventory ini? Ini tidak dapat dibatalkan."
+        "Apakah Anda yakin ingin menghapus item inventory ini? Ini tidak dapat dibatalkan.",
       )
     ) {
       try {
@@ -532,7 +538,7 @@ export default function Home() {
         item.statusPermintaan,
         escapeCsv(item.kebutuhanKhusus),
         escapeCsv(item.catatanPerlengkapan),
-      ].join(",")
+      ].join(","),
     );
 
     // Gabungkan header dan semua baris data
@@ -547,7 +553,7 @@ export default function Home() {
     link.setAttribute("href", url);
     link.setAttribute(
       "download",
-      `laporan_permintaan_rdc_${new Date().toISOString().split("T")[0]}.csv`
+      `laporan_permintaan_rdc_${new Date().toISOString().split("T")[0]}.csv`,
     );
     document.body.appendChild(link);
     link.click();
@@ -715,27 +721,15 @@ export default function Home() {
               />
             </div>
 
-
-
             <div className="bg-white shadow-sm border border-gray-200 rounded-lg p-0">
               <PermintaanTable
                 permintaan={filteredPermintaan}
-                editingId={editingItem}
-                editForm={editForm}
-                prioritasOptions={prioritasOptions}
-                statusOptions={statusOptions}
                 divisiColors={divisiColors}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
-                onSave={handleSaveEdit}
-                onCancel={() => {
-                  setEditingItem(null);
-                  setEditForm({});
-                }}
-                onFormChange={(field, value) =>
-                  setEditForm({ ...editForm, [field]: value })
-                }
                 onRincianClick={handleRincianClick}
+                prioritasOptions={prioritasOptions}
+                statusOptions={statusOptions}
               />
             </div>
           </TabsContent>
@@ -746,8 +740,8 @@ export default function Home() {
               Rincian Kebutuhan Per Divisi
             </h2>
 
-            {/* Re-use PermintaanFilters for consistency, or keep as is if different behavior needed. 
-                For now, I'll reuse the filter logic but render the cards as before since that wasn't fully extracted to a component yet 
+            {/* Re-use PermintaanFilters for consistency, or keep as is if different behavior needed.
+                For now, I'll reuse the filter logic but render the cards as before since that wasn't fully extracted to a component yet
                 (it was part of the plan to extract components, but the card view logic is specific to this tab).
                 Actually, I can use the PermintaanFilters component here too!
             */}
@@ -774,7 +768,7 @@ export default function Home() {
               {divisiOptions.map((divisi) => {
                 // Menggunakan data yang sudah difilter
                 const divisiPermintaan = filteredPermintaan.filter(
-                  (item) => item.namaDivisi === divisi
+                  (item) => item.namaDivisi === divisi,
                 );
                 // @ts-ignore
                 const colors = divisiColors[divisi];
@@ -808,17 +802,12 @@ export default function Home() {
                         {/* Re-using PermintaanTable but we might want a read-only version or just use it with no edit actions */}
                         <PermintaanTable
                           permintaan={divisiPermintaan}
-                          editingId={null} // Disable editing in this view
-                          editForm={{}}
+                          divisiColors={divisiColors}
+                          onEdit={() => {}} // No-op, not editable here
+                          onDelete={() => {}} // No-op, not deletable here
+                          onRincianClick={handleRincianClick}
                           prioritasOptions={prioritasOptions}
                           statusOptions={statusOptions}
-                          divisiColors={divisiColors}
-                          onEdit={() => { }} // No-op
-                          onDelete={() => { }} // No-op
-                          onSave={() => { }} // No-op
-                          onCancel={() => { }} // No-op
-                          onFormChange={() => { }} // No-op
-                          onRincianClick={handleRincianClick}
                           isReadOnly={true}
                         />
                       </div>
@@ -835,6 +824,19 @@ export default function Home() {
           onOpenChange={setIsRincianDetailOpen}
           item={selectedRincianItem}
           divisiColors={divisiColors}
+        />
+
+        <EditPermintaanDialog
+          open={isEditPermintaanOpen}
+          onOpenChange={setIsEditPermintaanOpen}
+          item={editForm}
+          onFormChange={(field, value) =>
+            setEditForm((prev) => ({ ...prev, [field]: value }))
+          }
+          onSave={handleSaveEdit}
+          divisiOptions={divisiOptions}
+          prioritasOptions={prioritasOptions}
+          statusOptions={statusOptions}
         />
       </div>
     </main>

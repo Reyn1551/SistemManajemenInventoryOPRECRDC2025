@@ -14,11 +14,15 @@ export async function PUT(
       namaBarang,
       jumlahDiminta,
       hargaSatuan,
-      totalHarga,
       prioritas,
       statusPermintaan,
       totalBiayaAktual,
+      kebutuhanKhusus,
+      catatanPerlengkapan,
     } = body;
+
+    // Recalculate totalHarga on the backend for data integrity
+    const totalHarga = (jumlahDiminta || 0) * (hargaSatuan || 0);
 
     const updatedPermintaan = await db.permintaan.update({
       where: { id },
@@ -30,6 +34,8 @@ export async function PUT(
         prioritas,
         statusPermintaan,
         totalBiayaAktual, // Pastikan field ini disertakan dalam update
+        kebutuhanKhusus,
+        catatanPerlengkapan,
       },
     });
     return NextResponse.json(updatedPermintaan);
